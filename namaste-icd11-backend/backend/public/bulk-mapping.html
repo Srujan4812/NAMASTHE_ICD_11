@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk Mapping - NAMASTE-ICD11 Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#10b981', // Ayurvedic green
+                        secondary: '#3b82f6', // Medical blue
+                        medical: '#3b82f6',
+                        ayurvedic: '#10b981',
+                        dark: '#1f2937',
+                        light: '#f9fafb'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+        .glow {
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+        }
+        .medical-glow {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        }
+        .code-display {
+            font-family: 'Courier New', monospace;
+            background-color: #f3f4f6;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-weight: bold;
+        }
+        .status-mapped {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        .status-not-found {
+            background-color: #fee2e2;
+            color: #b91c1c;
+        }
+        .status-pending {
+            background-color: #fef3c7;
+            color: #d97706;
+        }
+        .upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        .upload-area:hover {
+            border-color: #3b82f6;
+            background-color: #f9fafb;
+        }
+        .upload-area.dragover {
+            border-color: #10b981;
+            background-color: #ecfdf5;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Global Header -->
+    <header class="bg-white shadow-md border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-xl font-bold text-gray-900 flex items-center">
+                            <i class="fas fa-heartbeat text-medical mr-2"></i>
+                            <span class="text-medical">NAMASTE</span>
+                            <span class="mx-2 text-gray-400">↔</span>
+                            <span class="text-ayurvedic">ICD-11</span>
+                            <span class="ml-2 text-sm font-normal text-gray-500">Terminology Mapping Platform</span>
+                        </h1>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="darkModeToggle" class="p-2 rounded-full hover:bg-gray-100">
+                        <i class="fas fa-moon text-gray-600"></i>
+                    </button>
+                    <div class="relative">
+                        <button class="flex text-sm rounded-full focus:outline-none">
+                            <span class="inline-block h-8 w-8 rounded-full bg-ayurvedic text-white flex items-center justify-center">
+                                <i class="fas fa-user-md"></i>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- App Shell Layout -->
+    <div class="flex h-screen">
+        <!-- Sidebar Navigation -->
+        <nav class="w-64 bg-white shadow-md border-r border-gray-200">
+            <div class="p-4">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Navigation</h2>
+                <ul class="space-y-2">
+                    <li>
+                        <a href="dashboard.html" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
+                            <i class="fas fa-tachometer-alt mr-3 text-medical"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="search-mapping.html" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
+                            <i class="fas fa-search mr-3 text-ayurvedic"></i>
+                            Search & Mapping
+                        </a>
+                    </li>
+                    <li>
+                        <a href="terminology-explorer.html" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
+                            <i class="fas fa-book-medical mr-3 text-medical"></i>
+                            Terminology Explorer
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center px-4 py-2 bg-ayurvedic bg-opacity-10 text-ayurvedic rounded-md font-medium">
+                            <i class="fas fa-upload mr-3 text-ayurvedic"></i>
+                            Bulk Mapping
+                        </a>
+                    </li>
+                    <li>
+                        <a href="about.html" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
+                            <i class="fas fa-info-circle mr-3 text-medical"></i>
+                            About
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 overflow-y-auto p-6">
+            <!-- Page Title -->
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Bulk Mapping</h1>
+                <p class="text-gray-600">Upload and process multiple NAMASTE to ICD-11 mappings at once</p>
+            </div>
+
+            <!-- Upload Section -->
+            <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-8">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                    <i class="fas fa-cloud-upload-alt mr-3 text-ayurvedic"></i> Upload CSV File
+                </h2>
+                
+                <div class="upload-area" id="uploadArea">
+                    <i class="fas fa-file-csv text-4xl text-medical mb-4"></i>
+                    <p class="text-lg font-medium text-gray-900 mb-2">Upload NAMASTE Terminology CSV</p>
+                    <p class="text-gray-500 mb-4">CSV file should contain columns: Name, NAMASTE_Code, ICD11_Code, Category, Definition</p>
+                    <button id="uploadBtn" class="bg-ayurvedic hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition duration-200 flex items-center mx-auto">
+                        <i class="fas fa-upload mr-2"></i> Choose File
+                    </button>
+                    <input type="file" id="fileInput" accept=".csv" class="hidden">
+                </div>
+                
+                <div id="uploadProgress" class="hidden mt-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-medium text-gray-700">Uploading file...</span>
+                        <span class="text-sm font-medium text-gray-700" id="progressPercent">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                        <div class="bg-ayurvedic h-2.5 rounded-full transition-all duration-300 ease-in-out" id="progressBar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview Section -->
+            <div id="previewSection" class="hidden bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-8">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold text-gray-900 flex items-center">
+                        <i class="fas fa-table mr-3 text-medical"></i> File Preview
+                    </h2>
+                    <button id="processBtn" class="bg-medical hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition duration-200">
+                        Process Mappings
+                    </button>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200" id="previewTable">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Term</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NAMASTE Code</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ICD-11 Code</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mapping Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200" id="previewTableBody">
+                            <!-- Preview rows will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-4 flex justify-between">
+                    <div>
+                        <span class="text-sm text-gray-600">Showing <span id="previewCount">0</span> rows</span>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button id="prevPreview" class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                            Previous
+                        </button>
+                        <button id="nextPreview" class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                            Next
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Processing Section -->
+            <div id="processingSection" class="hidden bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-8">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                    <i class="fas fa-cogs mr-3 text-ayurvedic"></i> Processing Mappings
+                </h2>
+                
+                <div class="flex items-center justify-center py-8">
+                    <div class="text-center">
+                        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-ayurvedic mx-auto mb-4"></div>
+                        <p class="text-gray-700">Processing terminology mappings...</p>
+                        <p class="text-sm text-gray-500 mt-2">This may take a few moments</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div id="resultsSection" class="hidden bg-white rounded-lg shadow-md border border-gray-200 p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                    <i class="fas fa-chart-bar mr-3 text-medical"></i> Processing Results
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                        <div class="text-2xl font-bold text-green-800" id="mappedCount">0</div>
+                        <div class="text-sm text-green-600">Successfully Mapped</div>
+                    </div>
+                    <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                        <div class="text-2xl font-bold text-yellow-800" id="pendingCount">0</div>
+                        <div class="text-sm text-yellow-600">Pending Review</div>
+                    </div>
+                    <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                        <div class="text-2xl font-bold text-red-800" id="notFoundCount">0</div>
+                        <div class="text-sm text-red-600">Not Found</div>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                        <div class="text-2xl font-bold text-blue-800" id="totalCount">0</div>
+                        <div class="text-sm text-blue-600">Total Processed</div>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-3">Summary</h3>
+                    <p id="summaryText" class="text-gray-700"></p>
+                </div>
+                
+                <div class="flex space-x-4">
+                    <button id="exportResultsBtn" class="bg-ayurvedic hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium transition duration-200 flex items-center" disabled>
+                        <i class="fas fa-file-export mr-2"></i> Export Results
+                    </button>
+                    <button id="newUploadBtn" class="bg-medical hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition duration-200 flex items-center">
+                        <i class="fas fa-upload mr-2"></i> New Upload
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
+    <script>
+        // DOM elements
+        const uploadArea = document.getElementById('uploadArea');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const fileInput = document.getElementById('fileInput');
+        const uploadProgress = document.getElementById('uploadProgress');
+        const progressPercent = document.getElementById('progressPercent');
+        const progressBar = document.getElementById('progressBar');
+        const previewSection = document.getElementById('previewSection');
+        const previewTableBody = document.getElementById('previewTableBody');
+        const previewCount = document.getElementById('previewCount');
+        const processBtn = document.getElementById('processBtn');
+        const processingSection = document.getElementById('processingSection');
+        const resultsSection = document.getElementById('resultsSection');
+        const mappedCount = document.getElementById('mappedCount');
+        const pendingCount = document.getElementById('pendingCount');
+        const notFoundCount = document.getElementById('notFoundCount');
+        const totalCount = document.getElementById('totalCount');
+        const summaryText = document.getElementById('summaryText');
+        const exportResultsBtn = document.getElementById('exportResultsBtn');
+        const newUploadBtn = document.getElementById('newUploadBtn');
+        
+        // State variables
+        let uploadedData = [];
+        let currentPage = 1;
+        const itemsPerPage = 5;
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+        });
+        
+        // Setup event listeners
+        function setupEventListeners() {
+            // Upload button click
+            uploadBtn.addEventListener('click', () => {
+                fileInput.click();
+            });
+            
+            // File input change
+            fileInput.addEventListener('change', handleFileUpload);
+            
+            // Drag and drop events
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleFileUpload();
+                }
+            });
+            
+            // Process button
+            processBtn.addEventListener('click', processMappings);
+            
+            // Export results button
+            exportResultsBtn.addEventListener('click', exportResults);
+            
+            // New upload button
+            newUploadBtn.addEventListener('click', resetForm);
+        }
+        
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `p-4 rounded-lg shadow-lg max-w-xs ${type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white`;
+            toast.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} mr-2"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.getElementById('toastContainer').appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+        
+        // Handle file upload
+        function handleFileUpload() {
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showToast('Please select a file', 'error');
+                return;
+            }
+            
+            if (!file.name.toLowerCase().endsWith('.csv')) {
+                showToast('Please upload a CSV file', 'error');
+                return;
+            }
+            
+            // Simulate upload progress
+            simulateUploadProgress(file, () => {
+                // Parse CSV data
+                parseCSVData(file, (data) => {
+                    uploadedData = data;
+                    showPreview();
+                });
+            });
+        }
+        
+        // Simulate upload progress
+        function simulateUploadProgress(file, callback) {
+            uploadProgress.classList.remove('hidden');
+            progressBar.style.width = '0%';
+            progressPercent.textContent = '0%';
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 5;
+                progressBar.style.width = `${progress}%`;
+                progressPercent.textContent = `${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        uploadProgress.classList.add('hidden');
+                        callback();
+                    }, 500);
+                }
+            }, 50);
+        }
+        
+        // Parse CSV data
+        function parseCSVData(file, callback) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const lines = text.split('\n');
+                
+                // Parse headers from first line
+                const headers = lines[0].split(',').map(header => header.trim().replace(/"/g, ''));
+                
+                // Parse data rows
+                const data = [];
+                for (let i = 1; i < lines.length; i++) {
+                    if (lines[i].trim() === '') continue;
+                    
+                    const values = lines[i].split(',').map(value => value.trim().replace(/"/g, ''));
+                    const row = {};
+                    
+                    for (let j = 0; j < headers.length; j++) {
+                        row[headers[j]] = values[j] || '';
+                    }
+                    
+                    // Add a random mapping status for demo
+                    const statuses = ['Mapped', 'Pending', 'Not Found'];
+                    row.mappingStatus = statuses[Math.floor(Math.random() * statuses.length)];
+                    
+                    data.push(row);
+                }
+                
+                callback(data);
+            };
+            
+            reader.readAsText(file);
+        }
+        
+        // Show preview of uploaded data
+        function showPreview() {
+            previewSection.classList.remove('hidden');
+            currentPage = 1;
+            renderPreviewTable();
+        }
+        
+        // Render preview table
+        function renderPreviewTable() {
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, uploadedData.length);
+            const pageData = uploadedData.slice(startIndex, endIndex);
+            
+            // Update preview count
+            previewCount.textContent = uploadedData.length;
+            
+            // Clear table
+            previewTableBody.innerHTML = '';
+            
+            if (pageData.length === 0) {
+                previewTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                            No data to preview
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // Add rows to table
+            pageData.forEach(item => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50';
+                
+                const statusClass = item.mappingStatus === 'Mapped' ? 'status-mapped' : 
+                                  item.mappingStatus === 'Pending' ? 'status-pending' : 'status-not-found';
+                
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.Term || item.Name || 'N/A'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="code-display text-sm font-medium text-ayurvedic">${item.NAMASTE_Code || item.Code || 'N/A'}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="code-display text-sm font-medium text-medical">${item.ICD11_Code || item['ICD-11 Code'] || 'N/A'}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.Category || 'N/A'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">
+                            ${item.mappingStatus}
+                        </span>
+                    </td>
+                `;
+                
+                previewTableBody.appendChild(row);
+            });
+            
+            // Update pagination buttons
+            document.getElementById('prevPreview').disabled = currentPage <= 1;
+            document.getElementById('nextPreview').disabled = endIndex >= uploadedData.length;
+        }
+        
+        // Process mappings
+        function processMappings() {
+            previewSection.classList.add('hidden');
+            processingSection.classList.remove('hidden');
+            
+            // Simulate processing delay
+            setTimeout(() => {
+                // Calculate results
+                const mapped = uploadedData.filter(item => item.mappingStatus === 'Mapped').length;
+                const pending = uploadedData.filter(item => item.mappingStatus === 'Pending').length;
+                const notFound = uploadedData.filter(item => item.mappingStatus === 'Not Found').length;
+                
+                // Update results display
+                mappedCount.textContent = mapped;
+                pendingCount.textContent = pending;
+                notFoundCount.textContent = notFound;
+                totalCount.textContent = uploadedData.length;
+                
+                summaryText.textContent = `Successfully processed ${uploadedData.length} terminology mappings. ${mapped} mappings were successfully matched to ICD-11 codes, ${pending} require manual review, and ${notFound} could not be found in the current terminology database.`;
+                
+                // Show results section
+                processingSection.classList.add('hidden');
+                resultsSection.classList.remove('hidden');
+                
+                // Enable export button if there are results
+                exportResultsBtn.disabled = uploadedData.length === 0;
+                
+                showToast('Mappings processed successfully!');
+            }, 2000);
+        }
+        
+        // Export results
+        function exportResults() {
+            // In a real implementation, this would generate a CSV file
+            // For demo, we'll just show a toast
+            showToast('Results exported successfully!');
+        }
+        
+        // Reset form for new upload
+        function resetForm() {
+            // Reset form state
+            fileInput.value = '';
+            uploadedData = [];
+            currentPage = 1;
+            
+            // Hide sections
+            previewSection.classList.add('hidden');
+            processingSection.classList.add('hidden');
+            resultsSection.classList.add('hidden');
+            
+            // Show upload area
+            uploadArea.classList.remove('hidden');
+        }
+        
+        // Dark mode toggle
+        document.getElementById('darkModeToggle').addEventListener('click', function() {
+            document.body.classList.toggle('bg-gray-900');
+            document.body.classList.toggle('text-white');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+code,display,definition,synonyms,category
+N0001,Amalaki,Ayurvedic formulation derived from Emblica officinalis,Amla;Indian Gooseberry,Dravya
+N0002,Haritaki,Ayurvedic formulation used for digestion,Terminalia chebula,Dravya
+N0003,Ashwagandha,Adaptogenic herb used in Ayurveda,Withania somnifera,Dravya
+N0004,Triphala,Polyherbal formulation used for gut health,Amalaki-Haritaki-Bibhitaki,Formulation
+N0005,Bibhitaki,Herbal drug used for respiratory disorders,Terminalia bellirica,Dravya
+N0006,Brahmi,Herb used to improve memory and cognition,Bacopa monnieri,Dravya
+N0007,Guduchi,Immunomodulatory Ayurvedic herb,Tinospora cordifolia,Dravya
+N0008,Shatavari,Herb used for reproductive health,Asparagus racemosus,Dravya
+N0009,Yashtimadhu,Herbal drug used for gastric disorders,Licorice;Glycyrrhiza glabra,Dravya
+N0010,Nimba,Herbal drug with antimicrobial properties,Neem;Azadirachta indica,Dravya
+N0011,Arjuna,Herbal drug beneficial for cardiac health,Terminalia arjuna,Dravya
+N0012,Guggulu,Resin used for inflammatory conditions,Commiphora mukul,Dravya
+N0013,Pippali,Herb used to enhance digestion,Long pepper,Dravya
+N0014,Maricha,Herb used to stimulate metabolism,Black pepper,Dravya
+N0015,Shunthi,Dried ginger used in digestive disorders,Zingiber officinale,Dravya
+N0016,Dashamoola,Group of ten roots used in inflammation,Ten roots formulation,Formulation
+N0017,Chyawanprash,Classical rejuvenative formulation,Chyavan avaleha,Formulation
+N0018,Trikatu,Combination of three pungent herbs,Pippali-Maricha-Shunthi,Formulation
+N0019,Avipattikara,Formulation used in hyperacidity,Pitta balancing formulation,Formulation
+N0020,Hingvashtaka,Formulation for digestive disorders,Hing based formulation,Formulation
+N0021,Lodhra,Herbal drug used in gynecological disorders,Symplocos racemosa,Dravya
+N0022,Manjistha,Blood purifier herb,Rubia cordifolia,Dravya
+N0023,Katuki,Herb used in liver disorders,Picrorhiza kurroa,Dravya
+N0024,Bhallataka,Herbal drug used cautiously in therapy,Semecarpus anacardium,Dravya
+N0025,Vacha,Herb used for speech and cognition,Acorus calamus,Dravya
+N0026,Chitraka,Herbal drug for digestive stimulation,Plumbago zeylanica,Dravya
+N0027,Musta,Herb used in diarrhea and fever,Cyperus rotundus,Dravya
+N0028,Ativisha,Herb used in pediatric disorders,Aconitum heterophyllum,Dravya
+N0029,Bael,Herb used for diarrhea,Bilva;Aegle marmelos,Dravya
+N0030,Eranda,Herb used as purgative,Castor oil plant,Dravya
+N0031,Punarnava,Herb used for edema and kidney disorders,Boerhavia diffusa,Dravya
+N0032,Lasuna,Herb used for cardiovascular health,Garlic,Dravya
+N0033,Tulasi,Herb used for respiratory disorders,Holy basil,Dravya
+N0034,Bala,Herb used for strength and vitality,Sida cordifolia,Dravya
+N0035,Kapikacchu,Herb used for neurological health,Mucuna pruriens,Dravya
+N0036,Shankhapushpi,Herb used to enhance intellect,Convolvulus pluricaulis,Dravya
+N0037,Jatamansi,Herb used for mental health,Nardostachys jatamansi,Dravya
+N0038,Tagara,Herb used for sleep disorders,Valeriana wallichii,Dravya
+N0039,Kumari,Herb used for liver and skin health,Aloe vera,Dravya
+N0040,Amrita Ghrita,Medicated ghee used in rejuvenation,Guduchi ghrita,Formulation
+N0041,Brahmi Ghrita,Medicated ghee for cognition,Brahmi based ghrita,Formulation
+N0042,Kalyanaka Ghrita,Formulation for mental disorders,Medicated ghee,Formulation
+N0043,Taila Abhyanga,Oil massage therapy,Ayurvedic massage,Therapy
+N0044,Shirodhara,Therapy involving pouring oil on forehead,Head oil therapy,Therapy
+N0045,Nasya,Procedure of nasal drug administration,Nasal therapy,Procedure
+N0046,Vamana,Therapeutic emesis procedure,Panchakarma therapy,Procedure
+N0047,Virechana,Purgation therapy,Panchakarma therapy,Procedure
+N0048,Basti,Medicated enema therapy,Panchakarma therapy,Procedure
+N0049,Raktamokshana,Bloodletting therapy,Panchakarma therapy,Procedure
+N0050,Swarna Bhasma,Calcined gold preparation,Gold ash,Formulation
+N0051,Abhraka Bhasma,Calcined mica preparation,Mica ash,Formulation
+N0052,Godanti Bhasma,Calcined gypsum preparation,Gypsum ash,Formulation
+N0053,Lauha Bhasma,Calcined iron preparation,Iron ash,Formulation
+N0054,Mandoora Bhasma,Calcined iron oxide preparation,Iron oxide ash,Formulation
+N0055,Pravala Bhasma,Calcined coral preparation,Coral ash,Formulation
+N0056,Mukta Bhasma,Calcined pearl preparation,Pearl ash,Formulation
+N0057,Yashada Bhasma,Calcined zinc preparation,Zinc ash,Formulation
+N0058,Tamra Bhasma,Calcined copper preparation,Copper ash,Formulation
+N0059,Vanga Bhasma,Calcined tin preparation,Tin ash,Formulation
+N0060,Rasa Sindura,Processed mercury preparation,Red mercury sulfide,Formulation
+N0061,Arogyavardhini,Formulation for liver disorders,Liver tonic,Formulation
+N0062,Chandraprabha,Formulation for urinary disorders,Urinary tonic,Formulation
+N0063,Yograj Guggulu,Formulation for joint disorders,Guggulu formulation,Formulation
+N0064,Mahayograj Guggulu,Advanced formulation for arthritis,Guggulu compound,Formulation
+N0065,Simhanada Guggulu,Formulation for gout and arthritis,Guggulu preparation,Formulation
+N0066,Kaishora Guggulu,Formulation for skin and joint disorders,Guggulu compound,Formulation
+N0067,Trivrit,Herbal drug used as purgative,Operculina turpethum,Dravya
+N0068,Danti,Herbal drug used in detoxification,Baliospermum montanum,Dravya
+N0069,Sariva,Herb used as blood purifier,Hemidesmus indicus,Dravya
+N0070,Patha,Herb used in fever and diarrhea,Cissampelos pareira,Dravya
+N0071,Kutaja,Herb used in dysentery,Holarrhena antidysenterica,Dravya
+N0072,Chakramarda,Herb used for skin disorders,Cassia tora,Dravya
+N0073,Karanja,Herb used for skin diseases,Pongamia pinnata,Dravya
+N0074,Bakuchi,Herb used for leucoderma,Psoralea corylifolia,Dravya
+N0075,Indrayava,Herb used in digestive disorders,Holarrhena seeds,Dravya
+N0076,Gokshura,Herb used for urinary health,Tribulus terrestris,Dravya
+N0077,Varuna,Herb used for urinary stones,Crataeva nurvala,Dravya
+N0078,Shigru,Herb used for inflammation,Moringa oleifera,Dravya
+N0079,Agastya Haritaki,Formulation for respiratory disorders,Haritaki based formulation,Formulation
+N0080,Sitopaladi,Formulation for cough and cold,Expectorant formulation,Formulation
+N0081,Talisadi,Formulation for respiratory health,Talisadi churna,Formulation
+N0082,Eladi Churna,Formulation for digestive health,Eladi formulation,Formulation
+N0083,Hingvadi Churna,Formulation for bloating,Hing based churna,Formulation
+N0084,Pushyanuga,Formulation for gynecological disorders,Herbal compound,Formulation
+N0085,Lodhrasava,Fermented formulation for uterine health,Herbal asava,Formulation
+N0086,Drakshasava,Fermented formulation for anemia,Grape based asava,Formulation
+N0087,Arjunarishta,Fermented formulation for heart health,Arjuna based arishta,Formulation
+N0088,Ashokarishta,Fermented formulation for menstrual disorders,Ashoka based arishta,Formulation
+N0089,Dashamoolarishta,Fermented formulation for inflammation,Dashamoola arishta,Formulation
+N0090,Kumaryasava,Fermented formulation for liver disorders,Aloe based asava,Formulation
+N0091,Balarishta,Fermented formulation for strength,Bala based arishta,Formulation
+N0092,Mustakarishta,Fermented formulation for digestion,Musta based arishta,Formulation
+N0093,Saraswatarishta,Fermented formulation for cognition,Brahmi based arishta,Formulation
+N0094,Lohasava,Fermented formulation for anemia,Iron based asava,Formulation
+N0095,Punarnavasava,Fermented formulation for edema,Punarnava based asava,Formulation
+N0096,Kanakasava,Fermented formulation for respiratory disorders,Datura based asava,Formulation
+N0097,Abhayarishta,Fermented formulation for digestion,Haritaki based arishta,Formulation
+N0098,Jeerakadyarishta,Fermented formulation for postpartum care,Jeeraka based arishta,Formulation
+N0099,Chitrakadi Vati,Tablet formulation for digestion,Chitraka based tablet,Formulation
+N0100,Agnitundi Vati,Tablet formulation for metabolic disorders,Herbal tablet,Formulation

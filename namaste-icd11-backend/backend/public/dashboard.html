@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NAMASTE-ICD11 EMR Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#10b981',
+                        secondary: '#3b82f6',
+                        dark: '#1f2937',
+                        light: '#f9fafb'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(0); }
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+        .search-highlight {
+            background-color: #fef3c7;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+        .status-active {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        .status-inactive {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-xl font-bold text-primary">
+                            <i class="fas fa-heartbeat mr-2"></i>NAMASTE-ICD11 EMR
+                        </h1>
+                    </div>
+                    <div class="hidden md:block">
+                        <div class="ml-10 flex items-baseline space-x-4">
+                            <a href="#" class="bg-primary text-white px-4 py-2 rounded-md text-sm font-medium">Dashboard</a>
+                            <a href="index.html" class="text-gray-600 hover:text-primary px-4 py-2 rounded-md text-sm font-medium">Search</a>
+                            <a href="api-docs.html" class="text-gray-600 hover:text-primary px-4 py-2 rounded-md text-sm font-medium">API Docs</a>
+                            <a href="#" class="text-gray-600 hover:text-primary px-4 py-2 rounded-md text-sm font-medium">Reports</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <div class="ml-3 relative">
+                        <div>
+                            <button class="flex text-sm rounded-full focus:outline-none">
+                                <span class="inline-block h-8 w-8 rounded-full bg-primary text-white flex items-center justify-center">
+                                    <i class="fas fa-user-md"></i>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Dashboard Header -->
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">NAMASTE Terminology Dashboard</h2>
+            <p class="text-gray-600">Search and manage AYUSH terminology with ICD-11 mappings</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-green-100 text-primary mr-4">
+                        <i class="fas fa-pills text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Total NAMASTE Codes</p>
+                        <p class="text-2xl font-semibold text-gray-900" id="totalCodes">100</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-blue-100 text-secondary mr-4">
+                        <i class="fas fa-map text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Mapped Codes</p>
+                        <p class="text-2xl font-semibold text-gray-900" id="mappedCodes">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-purple-100 text-purple-600 mr-4">
+                        <i class="fas fa-file-medical text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Saved Bundles</p>
+                        <p class="text-2xl font-semibold text-gray-900" id="savedBundles">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-yellow-100 text-yellow-600 mr-4">
+                        <i class="fas fa-users text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Active Users</p>
+                        <p class="text-2xl font-semibold text-gray-900">1</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Section -->
+        <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-8">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Search NAMASTE Codes</h3>
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="flex-1">
+                    <input 
+                        type="text" 
+                        id="namasteCode" 
+                        placeholder="Enter NAMASTE code or search term (e.g., N0001, Amalaki, Ashwagandha...)" 
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    >
+                </div>
+                <div class="flex gap-2">
+                    <button id="searchBtn" class="bg-primary hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition duration-200 flex items-center">
+                        <i class="fas fa-search mr-2"></i> Search
+                    </button>
+                    <button id="clearBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition duration-200 flex items-center">
+                        <i class="fas fa-times mr-2"></i> Clear
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultsSection" class="hidden">
+            <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Search Results</h3>
+                    <button id="saveBundleBtn" class="bg-primary hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition duration-200 flex items-center" disabled>
+                        <i class="fas fa-save mr-2"></i> Save Bundle
+                    </button>
+                </div>
+                
+                <div id="mappingResults" class="space-y-4">
+                    <!-- Results will be populated here -->
+                </div>
+                
+                <div id="bundleSection" class="mt-6 p-4 bg-blue-50 rounded-lg hidden">
+                    <h4 class="text-md font-semibold text-gray-900 mb-2">FHIR Bundle Information</h4>
+                    <div id="bundleInfo" class="text-sm text-gray-700">
+                        <!-- Bundle info will appear here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Searches -->
+        <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Searches</h3>
+            <div id="recentSearches" class="space-y-2">
+                <div class="text-gray-500 text-center py-8">No recent searches yet</div>
+            </div>
+        </div>
+
+        <!-- All NAMASTE Codes Table -->
+        <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6 mt-8">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">All NAMASTE Codes</h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Display</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="codesTableBody" class="bg-white divide-y divide-gray-200">
+                        <!-- Table rows will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Loading Modal -->
+    <div id="loadingModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-lg shadow-xl">
+            <div class="flex items-center justify-center">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                <span class="ml-3 text-gray-700">Loading...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
+    <script>
+        // API base URL - adjust if needed
+        const API_BASE_URL = 'http://localhost:3000';
+        
+        // DOM elements
+        const namasteCodeInput = document.getElementById('namasteCode');
+        const searchBtn = document.getElementById('searchBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const searchBtn2 = document.getElementById('searchBtn');
+        const saveBundleBtn = document.getElementById('saveBundleBtn');
+        const resultsSection = document.getElementById('resultsSection');
+        const mappingResults = document.getElementById('mappingResults');
+        const bundleInfo = document.getElementById('bundleInfo');
+        const bundleSection = document.getElementById('bundleSection');
+        const loadingModal = document.getElementById('loadingModal');
+        const recentSearches = document.getElementById('recentSearches');
+        const codesTableBody = document.getElementById('codesTableBody');
+        const totalCodesEl = document.getElementById('totalCodes');
+        const mappedCodesEl = document.getElementById('mappedCodes');
+        const savedBundlesEl = document.getElementById('savedBundles');
+        
+        // Current mapping data
+        let currentMapping = null;
+        let allNamasteCodes = [];
+        let recentSearchList = JSON.parse(localStorage.getItem('recentSearches')) || [];
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAllCodes();
+            updateRecentSearches();
+            updateStats();
+        });
+        
+        // Show loading state
+        function showLoading() {
+            loadingModal.classList.remove('hidden');
+        }
+        
+        // Hide loading state
+        function hideLoading() {
+            loadingModal.classList.add('hidden');
+        }
+        
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `p-4 rounded-lg shadow-lg max-w-xs ${type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white`;
+            toast.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} mr-2"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.getElementById('toastContainer').appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+        
+        // Update stats
+        function updateStats() {
+            totalCodesEl.textContent = allNamasteCodes.length;
+            // For now, we'll assume all codes are potentially mappable
+            mappedCodesEl.textContent = allNamasteCodes.length;
+        }
+        
+        // Load all NAMASTE codes
+        async function loadAllCodes() {
+            try {
+                showLoading();
+                
+                // For now, we'll create a mock list based on the CSV data
+                // In a real implementation, this would come from an API call
+                allNamasteCodes = [
+                    {code: "N0001", display: "Amalaki", definition: "Ayurvedic formulation derived from Emblica officinalis", synonyms: "Amla;Indian Gooseberry", category: "Dravya"},
+                    {code: "N0002", display: "Haritaki", definition: "Ayurvedic formulation used for digestion", synonyms: "Terminalia chebula", category: "Dravya"},
+                    {code: "N0003", display: "Ashwagandha", definition: "Adaptogenic herb used in Ayurveda", synonyms: "Withania somnifera", category: "Dravya"},
+                    {code: "N0004", display: "Triphala", definition: "Polyherbal formulation used for gut health", synonyms: "Amalaki-Haritaki-Bibhitaki", category: "Formulation"},
+                    {code: "N0005", display: "Bibhitaki", definition: "Herbal drug used for respiratory disorders", synonyms: "Terminalia bellirica", category: "Dravya"},
+                    {code: "N0006", display: "Brahmi", definition: "Herb used to improve memory and cognition", synonyms: "Bacopa monnieri", category: "Dravya"},
+                    {code: "N0007", display: "Guduchi", definition: "Immunomodulatory Ayurvedic herb", synonyms: "Tinospora cordifolia", category: "Dravya"},
+                    {code: "N0008", display: "Shatavari", definition: "Herb used for reproductive health", synonyms: "Asparagus racemosus", category: "Dravya"},
+                    {code: "N0009", display: "Yashtimadhu", definition: "Herbal drug used for gastric disorders", synonyms: "Licorice;Glycyrrhiza glabra", category: "Dravya"},
+                    {code: "N0010", display: "Nimba", definition: "Herbal drug with antimicrobial properties", synonyms: "Neem;Azadirachta indica", category: "Dravya"},
+                    {code: "N0011", display: "Arjuna", definition: "Herbal drug beneficial for cardiac health", synonyms: "Terminalia arjuna", category: "Dravya"},
+                    {code: "N0012", display: "Guggulu", definition: "Resin used for inflammatory conditions", synonyms: "Commiphora mukul", category: "Dravya"},
+                    {code: "N0013", display: "Pippali", definition: "Herb used to enhance digestion", synonyms: "Long pepper", category: "Dravya"},
+                    {code: "N0014", display: "Maricha", definition: "Herb used to stimulate metabolism", synonyms: "Black pepper", category: "Dravya"},
+                    {code: "N0015", display: "Shunthi", definition: "Dried ginger used in digestive disorders", synonyms: "Zingiber officinale", category: "Dravya"},
+                    {code: "N0016", display: "Dashamoola", definition: "Group of ten roots used in inflammation", synonyms: "Ten roots formulation", category: "Formulation"},
+                    {code: "N0017", display: "Chyawanprash", definition: "Classical rejuvenative formulation", synonyms: "Chyavan avaleha", category: "Formulation"},
+                    {code: "N0018", display: "Trikatu", definition: "Combination of three pungent herbs", synonyms: "Pippali-Maricha-Shunthi", category: "Formulation"},
+                    {code: "N0019", display: "Avipattikara", definition: "Formulation used in hyperacidity", synonyms: "Pitta balancing formulation", category: "Formulation"},
+                    {code: "N0020", display: "Hingvashtaka", definition: "Formulation for digestive disorders", synonyms: "Hing based formulation", category: "Formulation"},
+                    {code: "N0021", display: "Lodhra", definition: "Herbal drug used in gynecological disorders", synonyms: "Symplocos racemosa", category: "Dravya"},
+                    {code: "N0022", display: "Manjistha", definition: "Blood purifier herb", synonyms: "Rubia cordifolia", category: "Dravya"},
+                    {code: "N0023", display: "Katuki", definition: "Herb used in liver disorders", synonyms: "Picrorhiza kurroa", category: "Dravya"},
+                    {code: "N0024", display: "Bhallataka", definition: "Herbal drug used cautiously in therapy", synonyms: "Semecarpus anacardium", category: "Dravya"},
+                    {code: "N0025", display: "Vacha", definition: "Herb used for speech and cognition", synonyms: "Acorus calamus", category: "Dravya"},
+                    {code: "N0026", display: "Chitraka", definition: "Herbal drug for digestive stimulation", synonyms: "Plumbago zeylanica", category: "Dravya"},
+                    {code: "N0027", display: "Musta", definition: "Herb used in diarrhea and fever", synonyms: "Cyperus rotundus", category: "Dravya"},
+                    {code: "N0028", display: "Ativisha", definition: "Herb used in pediatric disorders", synonyms: "Aconitum heterophyllum", category: "Dravya"},
+                    {code: "N0029", display: "Bael", definition: "Herb used for diarrhea", synonyms: "Bilva;Aegle marmelos", category: "Dravya"},
+                    {code: "N0030", display: "Eranda", definition: "Herb used as purgative", synonyms: "Castor oil plant", category: "Dravya"},
+                    {code: "N0031", display: "Punarnava", definition: "Herb used for edema and kidney disorders", synonyms: "Boerhavia diffusa", category: "Dravya"},
+                    {code: "N0032", display: "Lasuna", definition: "Herb used for cardiovascular health", synonyms: "Garlic", category: "Dravya"},
+                    {code: "N0033", display: "Tulasi", definition: "Herb used for respiratory disorders", synonyms: "Holy basil", category: "Dravya"},
+                    {code: "N0034", display: "Bala", definition: "Herb used for strength and vitality", synonyms: "Sida cordifolia", category: "Dravya"},
+                    {code: "N0035", display: "Kapikacchu", definition: "Herb used for neurological health", synonyms: "Mucuna pruriens", category: "Dravya"},
+                    {code: "N0036", display: "Shankhapushpi", definition: "Herb used to enhance intellect", synonyms: "Convolvulus pluricaulis", category: "Dravya"},
+                    {code: "N0037", display: "Jatamansi", definition: "Herb used for mental health", synonyms: "Nardostachys jatamansi", category: "Dravya"},
+                    {code: "N0038", display: "Tagara", definition: "Herb used for sleep disorders", synonyms: "Valeriana wallichii", category: "Dravya"},
+                    {code: "N0039", display: "Kumari", definition: "Herb used for liver and skin health", synonyms: "Aloe vera", category: "Dravya"},
+                    {code: "N0040", display: "Amrita Ghrita", definition: "Medicated ghee used in rejuvenation", synonyms: "Guduchi ghrita", category: "Formulation"},
+                    {code: "N0041", display: "Brahmi Ghrita", definition: "Medicated ghee for cognition", synonyms: "Brahmi based ghrita", category: "Formulation"},
+                    {code: "N0042", display: "Kalyanaka Ghrita", definition: "Formulation for mental disorders", synonyms: "Medicated ghee", category: "Formulation"},
+                    {code: "N0043", display: "Taila Abhyanga", definition: "Oil massage therapy", synonyms: "Ayurvedic massage", category: "Therapy"},
+                    {code: "N0044", display: "Shirodhara", definition: "Therapy involving pouring oil on forehead", synonyms: "Head oil therapy", category: "Therapy"},
+                    {code: "N0045", display: "Nasya", definition: "Procedure of nasal drug administration", synonyms: "Nasal therapy", category: "Procedure"},
+                    {code: "N0046", display: "Vamana", definition: "Therapeutic emesis procedure", synonyms: "Panchakarma therapy", category: "Procedure"},
+                    {code: "N0047", display: "Virechana", definition: "Purgation therapy", synonyms: "Panchakarma therapy", category: "Procedure"},
+                    {code: "N0048", display: "Basti", definition: "Medicated enema therapy", synonyms: "Panchakarma therapy", category: "Procedure"},
+                    {code: "N0049", display: "Raktamokshana", definition: "Bloodletting therapy", synonyms: "Panchakarma therapy", category: "Procedure"},
+                    {code: "N0050", display: "Swarna Bhasma", definition: "Calcined gold preparation", synonyms: "Gold ash", category: "Formulation"},
+                    {code: "N0051", display: "Abhraka Bhasma", definition: "Calcined mica preparation", synonyms: "Mica ash", category: "Formulation"},
+                    {code: "N0052", display: "Godanti Bhasma", definition: "Calcined gypsum preparation", synonyms: "Gypsum ash", category: "Formulation"},
+                    {code: "N0053", display: "Lauha Bhasma", definition: "Calcined iron preparation", synonyms: "Iron ash", category: "Formulation"},
+                    {code: "N0054", display: "Mandoora Bhasma", definition: "Calcined iron oxide preparation", synonyms: "Iron oxide ash", category: "Formulation"},
+                    {code: "N0055", display: "Pravala Bhasma", definition: "Calcined coral preparation", synonyms: "Coral ash", category: "Formulation"},
+                    {code: "N0056", display: "Mukta Bhasma", definition: "Calcined pearl preparation", synonyms: "Pearl ash", category: "Formulation"},
+                    {code: "N0057", display: "Yashada Bhasma", definition: "Calcined zinc preparation", synonyms: "Zinc ash", category: "Formulation"},
+                    {code: "N0058", display: "Tamra Bhasma", definition: "Calcined copper preparation", synonyms: "Copper ash", category: "Formulation"},
+                    {code: "N0059", display: "Vanga Bhasma", definition: "Calcined tin preparation", synonyms: "Tin ash", category: "Formulation"},
+                    {code: "N0060", display: "Rasa Sindura", definition: "Processed mercury preparation", synonyms: "Red mercury sulfide", category: "Formulation"},
+                    {code: "N0061", display: "Arogyavardhini", definition: "Formulation for liver disorders", synonyms: "Liver tonic", category: "Formulation"},
+                    {code: "N0062", display: "Chandraprabha", definition: "Formulation for urinary disorders", synonyms: "Urinary tonic", category: "Formulation"},
+                    {code: "N0063", display: "Yograj Guggulu", definition: "Formulation for joint disorders", synonyms: "Guggulu formulation", category: "Formulation"},
+                    {code: "N0064", display: "Mahayograj Guggulu", definition: "Advanced formulation for arthritis", synonyms: "Guggulu compound", category: "Formulation"},
+                    {code: "N0065", display: "Simhanada Guggulu", definition: "Formulation for gout and arthritis", synonyms: "Guggulu preparation", category: "Formulation"},
+                    {code: "N0066", display: "Kaishora Guggulu", definition: "Formulation for skin and joint disorders", synonyms: "Guggulu compound", category: "Formulation"},
+                    {code: "N0067", display: "Trivrit", definition: "Herbal drug used as purgative", synonyms: "Operculina turpethum", category: "Dravya"},
+                    {code: "N0068", display: "Danti", definition: "Herbal drug used in detoxification", synonyms: "Baliospermum montanum", category: "Dravya"},
+                    {code: "N0069", display: "Sariva", definition: "Herb used as blood purifier", synonyms: "Hemidesmus indicus", category: "Dravya"},
+                    {code: "N0070", display: "Patha", definition: "Herb used in fever and diarrhea", synonyms: "Cissampelos pareira", category: "Dravya"},
+                    {code: "N0071", display: "Kutaja", definition: "Herb used in dysentery", synonyms: "Holarrhena antidysenterica", category: "Dravya"},
+                    {code: "N0072", display: "Chakramarda", definition: "Herb used for skin disorders", synonyms: "Cassia tora", category: "Dravya"},
+                    {code: "N0073", display: "Karanja", definition: "Herb used for skin diseases", synonyms: "Pongamia pinnata", category: "Dravya"},
+                    {code: "N0074", display: "Bakuchi", definition: "Herb used for leucoderma", synonyms: "Psoralea corylifolia", category: "Dravya"},
+                    {code: "N0075", display: "Indrayava", definition: "Herb used in digestive disorders", synonyms: "Holarrhena seeds", category: "Dravya"},
+                    {code: "N0076", display: "Gokshura", definition: "Herb used for urinary health", synonyms: "Tribulus terrestris", category: "Dravya"},
+                    {code: "N0077", display: "Varuna", definition: "Herb used for urinary stones", synonyms: "Crataeva nurvala", category: "Dravya"},
+                    {code: "N0078", display: "Shigru", definition: "Herb used for inflammation", synonyms: "Moringa oleifera", category: "Dravya"},
+                    {code: "N0079", display: "Agastya Haritaki", definition: "Formulation for respiratory disorders", synonyms: "Haritaki based formulation", category: "Formulation"},
+                    {code: "N0080", display: "Sitopaladi", definition: "Formulation for cough and cold", synonyms: "Expectorant formulation", category: "Formulation"},
+                    {code: "N0081", display: "Talisadi", definition: "Formulation for respiratory health", synonyms: "Talisadi churna", category: "Formulation"},
+                    {code: "N0082", display: "Eladi Churna", definition: "Formulation for digestive health", synonyms: "Eladi formulation", category: "Formulation"},
+                    {code: "N0083", display: "Hingvadi Churna", definition: "Formulation for bloating", synonyms: "Hing based churna", category: "Formulation"},
+                    {code: "N0084", display: "Pushyanuga", definition: "Formulation for gynecological disorders", synonyms: "Herbal compound", category: "Formulation"},
+                    {code: "N0085", display: "Lodhrasava", definition: "Fermented formulation for uterine health", synonyms: "Herbal asava", category: "Formulation"},
+                    {code: "N0086", display: "Drakshasava", definition: "Fermented formulation for anemia", synonyms: "Grape based asava", category: "Formulation"},
+                    {code: "N0087", display: "Arjunarishta", definition: "Fermented formulation for heart health", synonyms: "Arjuna based arishta", category: "Formulation"},
+                    {code: "N0088", display: "Ashokarishta", definition: "Fermented formulation for menstrual disorders", synonyms: "Ashoka based arishta", category: "Formulation"},
+                    {code: "N0089", display: "Dashamoolarishta", definition: "Fermented formulation for inflammation", synonyms: "Dashamoola arishta", category: "Formulation"},
+                    {code: "N0090", display: "Kumaryasava", definition: "Fermented formulation for liver disorders", synonyms: "Aloe based asava", category: "Formulation"},
+                    {code: "N0091", display: "Balarishta", definition: "Fermented formulation for strength", synonyms: "Bala based arishta", category: "Formulation"},
+                    {code: "N0092", display: "Mustakarishta", definition: "Fermented formulation for digestion", synonyms: "Musta based arishta", category: "Formulation"},
+                    {code: "N0093", display: "Saraswatarishta", definition: "Fermented formulation for cognition", synonyms: "Brahmi based arishta", category: "Formulation"},
+                    {code: "N0094", display: "Lohasava", definition: "Fermented formulation for anemia", synonyms: "Iron based asava", category: "Formulation"},
+                    {code: "N0095", display: "Punarnavasava", definition: "Fermented formulation for edema", synonyms: "Punarnava based asava", category: "Formulation"},
+                    {code: "N0096", display: "Kanakasava", definition: "Fermented formulation for respiratory disorders", synonyms: "Datura based asava", category: "Formulation"},
+                    {code: "N0097", display: "Abhayarishta", definition: "Fermented formulation for digestion", synonyms: "Haritaki based arishta", category: "Formulation"},
+                    {code: "N0098", display: "Jeerakadyarishta", definition: "Fermented formulation for postpartum care", synonyms: "Jeeraka based arishta", category: "Formulation"},
+                    {code: "N0099", display: "Chitrakadi Vati", definition: "Tablet formulation for digestion", synonyms: "Chitraka based tablet", category: "Formulation"},
+                    {code: "N0100", display: "Agnitundi Vati", definition: "Tablet formulation for metabolic disorders", synonyms: "Herbal tablet", category: "Formulation"}
+                ];
+                
+                updateStats();
+                populateCodesTable();
+            } catch (error) {
+                console.error('Error loading codes:', error);
+                showToast('Error loading codes', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // Populate the codes table
+        function populateCodesTable() {
+            codesTableBody.innerHTML = '';
+            
+            allNamasteCodes.forEach(code => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50 transition-colors';
+                
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${code.code}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${code.display}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                            ${code.category}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full status-active">
+                            Active
+                        </span>
+                    </td>
+                `;
+                
+                codesTableBody.appendChild(row);
+            });
+        }
+        
+        // Update recent searches display
+        function updateRecentSearches() {
+            recentSearches.innerHTML = '';
+            
+            if (recentSearchList.length === 0) {
+                recentSearches.innerHTML = '<div class="text-gray-500 text-center py-8">No recent searches yet</div>';
+                return;
+            }
+            
+            recentSearchList.slice(0, 5).forEach(search => {
+                const div = document.createElement('div');
+                div.className = 'flex items-center justify-between p-3 bg-gray-50 rounded-lg';
+                div.innerHTML = `
+                    <span class="text-sm font-medium text-gray-900">${search.term}</span>
+                    <span class="text-xs text-gray-500">${new Date(search.timestamp).toLocaleTimeString()}</span>
+                `;
+                recentSearches.appendChild(div);
+            });
+        }
+        
+        // Add to recent searches
+        function addToRecentSearches(term) {
+            const newSearch = {
+                term: term,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Add to beginning of array
+            recentSearchList.unshift(newSearch);
+            
+            // Keep only the last 10 searches
+            recentSearchList = recentSearchList.slice(0, 10);
+            
+            // Save to localStorage
+            localStorage.setItem('recentSearches', JSON.stringify(recentSearchList));
+            
+            updateRecentSearches();
+        }
+        
+        // Search for mappings
+        async function searchMappings() {
+            const code = namasteCodeInput.value.trim();
+            
+            if (!code) {
+                showToast('Please enter a NAMASTE code or search term', 'error');
+                return;
+            }
+            
+            showLoading();
+            
+            try {
+                // First, try to get the code system expansion to find the term
+                const response = await fetch(`${API_BASE_URL}/ValueSet/$expand?filter=${encodeURIComponent(code)}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Check if we have expansion results
+                if (data.expansion && data.expansion.contains) {
+                    const matches = data.expansion.contains.filter(item => 
+                        item.code.toLowerCase().includes(code.toLowerCase()) || 
+                        item.display.toLowerCase().includes(code.toLowerCase())
+                    );
+                    
+                    if (matches.length > 0) {
+                        displayMappings(matches);
+                        addToRecentSearches(code);
+                    } else {
+                        showNoMapping();
+                    }
+                } else {
+                    showNoMapping();
+                }
+            } catch (error) {
+                console.error('Error searching mappings:', error);
+                showToast(`Error searching mappings: ${error.message}`, 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // Display mappings in the UI
+        function displayMappings(matches) {
+            mappingResults.innerHTML = '';
+            
+            matches.forEach(match => {
+                const mappingDiv = document.createElement('div');
+                mappingDiv.className = 'bg-green-50 border border-green-200 rounded-lg p-4 fade-in';
+                
+                mappingDiv.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-semibold text-gray-900 flex items-center">
+                                <i class="fas fa-pills text-green-600 mr-2"></i>
+                                ${match.code || 'N/A'}
+                                <span class="ml-2 text-sm font-normal bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                                    ${match.system || 'N/A'}
+                                </span>
+                            </h4>
+                            <p class="text-gray-700 mt-1">${match.display || 'N/A'}</p>
+                        </div>
+                        <button class="text-green-600 hover:text-green-800" onclick="copyCode('${match.code}')">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                `;
+                
+                mappingResults.appendChild(mappingDiv);
+            });
+            
+            // Try to find mappings using ConceptMap (if available)
+            if (matches[0].code) {
+                findConceptMapMappings(matches[0].code);
+            }
+            
+            resultsSection.classList.remove('hidden');
+        }
+        
+        // Try to find concept map mappings
+        async function findConceptMapMappings(namasteCode) {
+            try {
+                // This would call the ConceptMap translate endpoint if implemented
+                const response = await fetch(`${API_BASE_URL}/ConceptMap/$translate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        code: namasteCode,
+                        system: 'http://namaste.gov.in/CodeSystem/namaste',
+                        targetSystem: 'https://icd.who.int/CodeSystem/icd11'
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Handle the translate response based on the actual API format
+                    if (data.resourceType === 'Parameters' && data.parameter && data.parameter.length > 0) {
+                        const targetDiv = document.createElement('div');
+                        targetDiv.className = 'bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4 fade-in';
+                        
+                        let mappingHtml = '<h4 class="font-semibold text-gray-900 mb-2 flex items-center"><i class="fas fa-map text-blue-600 mr-2"></i>ICD-11 Mappings:</h4>';
+                        
+                        data.parameter.forEach(param => {
+                            if (param.name === 'match') {
+                                // Direct mapping
+                                mappingHtml += '<div class="mb-2">';
+                                param.part.forEach(part => {
+                                    if (part.name === 'code') {
+                                        mappingHtml += `<p class="text-gray-700"><strong>Code:</strong> ${part.valueCode}</p>`;
+                                    } else if (part.name === 'display') {
+                                        mappingHtml += `<p class="text-gray-700"><strong>Display:</strong> ${part.valueString}</p>`;
+                                    } else if (part.name === 'equivalence') {
+                                        mappingHtml += `<p class="text-gray-700"><strong>Equivalence:</strong> ${part.valueCode}</p>`;
+                                    }
+                                });
+                                mappingHtml += '</div>';
+                            } else if (param.name === 'dual-match') {
+                                // Chained mapping (NAMASTE → TM2 → ICD-11)
+                                mappingHtml += '<h5 class="text-sm font-medium text-gray-800 mb-1">Chained Mapping (NAMASTE → TM2 → ICD-11):</h5>';
+                                mappingHtml += '<div class="ml-2">';
+                                param.part.forEach(part => {
+                                    if (part.name === 'tm2-code') {
+                                        mappingHtml += `<p class="text-gray-700 text-sm"><strong>TM2 Code:</strong> ${part.valueCode}</p>`;
+                                    } else if (part.name === 'tm2-display') {
+                                        mappingHtml += `<p class="text-gray-700 text-sm"><strong>TM2 Display:</strong> ${part.valueString}</p>`;
+                                    } else if (part.name === 'bio-code') {
+                                        mappingHtml += `<p class="text-gray-700 text-sm"><strong>ICD-11 Code:</strong> ${part.valueCode}</p>`;
+                                    } else if (part.name === 'bio-display') {
+                                        mappingHtml += `<p class="text-gray-700 text-sm"><strong>ICD-11 Display:</strong> ${part.valueString}</p>`;
+                                    }
+                                });
+                                mappingHtml += '</div>';
+                            }
+                        });
+                        
+                        targetDiv.innerHTML = mappingHtml;
+                        mappingResults.appendChild(targetDiv);
+                        
+                        // Store mapping for bundle creation
+                        currentMapping = {
+                            namasteCode: namasteCode,
+                            icd11Mappings: data.parameter
+                        };
+                        
+                        // Enable save bundle button
+                        saveBundleBtn.disabled = false;
+                    } else if (data.resourceType === 'OperationOutcome') {
+                        // No mapping found
+                        console.log('No mapping found for this code');
+                    }
+                }
+            } catch (error) {
+                console.error('Error finding concept map mappings:', error);
+                // This is optional - the main search might work without concept maps
+            }
+        }
+        
+        // Show no mapping found
+        function showNoMapping() {
+            mappingResults.innerHTML = '<div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-yellow-800"><i class="fas fa-exclamation-triangle mr-2"></i>No mappings found for the entered code.</div>';
+            resultsSection.classList.remove('hidden');
+            saveBundleBtn.disabled = true;
+        }
+        
+        // Save FHIR bundle
+        async function saveBundle() {
+            if (!currentMapping) {
+                showToast('No mapping data available to save', 'error');
+                return;
+            }
+            
+            showLoading();
+            
+            try {
+                // Create a proper FHIR bundle with required resources
+                const bundle = {
+                    resourceType: 'Bundle',
+                    type: 'transaction',
+                    entry: [
+                        {
+                            fullUrl: `urn:uuid:${crypto.randomUUID ? crypto.randomUUID() : 'patient-1'}`,
+                            resource: {
+                                resourceType: 'Patient',
+                                name: [{
+                                    text: 'Test Patient'
+                                }],
+                                gender: 'unknown'
+                            },
+                            request: {
+                                method: 'POST',
+                                url: 'Patient'
+                            }
+                        },
+                        {
+                            fullUrl: `urn:uuid:${crypto.randomUUID ? crypto.randomUUID() : 'encounter-1'}`,
+                            resource: {
+                                resourceType: 'Encounter',
+                                status: 'finished',
+                                subject: {
+                                    reference: `Patient/${crypto.randomUUID ? crypto.randomUUID() : 'patient-1'}`
+                                }
+                            },
+                            request: {
+                                method: 'POST',
+                                url: 'Encounter'
+                            }
+                        },
+                        {
+                            fullUrl: `urn:uuid:${crypto.randomUUID ? crypto.randomUUID() : 'condition-1'}`,
+                            resource: {
+                                resourceType: 'Condition',
+                                code: {
+                                    coding: [
+                                        {
+                                            system: 'http://namaste.gov.in/CodeSystem/namaste',
+                                            code: currentMapping.namasteCode,
+                                            display: 'NAMASTE Code'
+                                        },
+                                        // Add ICD-11 mappings if available
+                                        ...currentMapping.icd11Mappings.flatMap(param => {
+                                            if (param.name === 'match') {
+                                                // Direct mapping
+                                                const codePart = param.part.find(p => p.name === 'code');
+                                                const displayPart = param.part.find(p => p.name === 'display');
+                                                if (codePart && codePart.valueCode) {
+                                                    return [{
+                                                        system: 'http://hl7.org/fhir/sid/icd-11',
+                                                        code: codePart.valueCode,
+                                                        display: displayPart ? displayPart.valueString : 'ICD-11 Code'
+                                                    }];
+                                                }
+                                            } else if (param.name === 'dual-match') {
+                                                // Chained mapping - get ICD-11 bio code
+                                                const bioCodePart = param.part.find(p => p.name === 'bio-code');
+                                                const bioDisplayPart = param.part.find(p => p.name === 'bio-display');
+                                                if (bioCodePart && bioCodePart.valueCode) {
+                                                    return [{
+                                                        system: 'http://hl7.org/fhir/sid/icd-11',
+                                                        code: bioCodePart.valueCode,
+                                                        display: bioDisplayPart ? bioDisplayPart.valueString : 'ICD-11 Code'
+                                                    }];
+                                                }
+                                            }
+                                            return [];
+                                        }).filter(mapping => mapping.code)
+                                    ]
+                                },
+                                subject: {
+                                    reference: `Patient/${crypto.randomUUID ? crypto.randomUUID() : 'patient-1'}`
+                                },
+                                encounter: {
+                                    reference: `Encounter/${crypto.randomUUID ? crypto.randomUUID() : 'encounter-1'}`
+                                },
+                                verificationStatus: {
+                                    coding: [{
+                                        system: 'http://terminology.hl7.org/CodeSystem/condition-ver-status',
+                                        code: 'confirmed',
+                                        display: 'Confirmed'
+                                    }]
+                                }
+                            },
+                            request: {
+                                method: 'POST',
+                                url: 'Condition'
+                            }
+                        }
+                    ]
+                };
+                
+                // Send the bundle to the backend
+                const response = await fetch(`${API_BASE_URL}/Bundle`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(bundle)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                // Display bundle info
+                bundleInfo.innerHTML = `
+                    <p><strong>Bundle ID:</strong> ${result.id || 'Generated'}</p>
+                    <p><strong>Type:</strong> ${result.type || 'transaction'}</p>
+                    <p><strong>Entry Count:</strong> ${result.entry ? result.entry.length : 0}</p>
+                    <p><strong>Saved Condition:</strong> ${currentMapping.namasteCode} with ICD-11 mappings</p>
+                `;
+                
+                bundleSection.classList.remove('hidden');
+                showToast('Bundle saved successfully!');
+                
+                // Update stats
+                const currentCount = parseInt(savedBundlesEl.textContent);
+                savedBundlesEl.textContent = currentCount + 1;
+                
+            } catch (error) {
+                console.error('Error saving bundle:', error);
+                showToast(`Error saving bundle: ${error.message}`, 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // Copy code to clipboard
+        function copyCode(code) {
+            navigator.clipboard.writeText(code).then(() => {
+                showToast('Code copied to clipboard!');
+            });
+        }
+        
+        // Clear search
+        function clearSearch() {
+            namasteCodeInput.value = '';
+            resultsSection.classList.add('hidden');
+            mappingResults.innerHTML = '';
+            bundleSection.classList.add('hidden');
+            saveBundleBtn.disabled = true;
+            currentMapping = null;
+        }
+        
+        // Event listeners
+        searchBtn.addEventListener('click', searchMappings);
+        clearBtn.addEventListener('click', clearSearch);
+        
+        // Allow Enter key to trigger search
+        namasteCodeInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchMappings();
+            }
+        });
+        
+        // Make copyCode function available globally
+        window.copyCode = copyCode;
+    </script>
+</body>
+</html>

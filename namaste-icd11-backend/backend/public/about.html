@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - NAMASTE-ICD11 Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#10b981', // Ayurvedic green
+                        secondary: '#3b82f6', // Medical blue
+                        medical: '#3b82f6',
+                        ayurvedic: '#10b981',
+                        dark: '#1f2937',
+                        light: '#f9fafb'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+        .glow {
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+        }
+        .medical-glow {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        }
+        .architecture-diagram {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 1px solid #bae6fd;
+            border-radius: 0.5rem;
+        }
+        .feature-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Global Header -->
+    <header class="bg-white shadow-md border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-xl font-bold text-gray-900 flex items-center">
+                            <i class="fas fa-heartbeat text-medical mr-2"></i>
+                            <span class="text-medical">NAMASTE</span>
+                            <span class="mx-2 text-gray-400">↔</span>
+                            <span class="text-ayurvedic">ICD-11</span>
+                            <span class="ml-2 text-sm font-normal text-gray-500">Terminology Mapping Platform</span>
+                        </h1>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="darkModeToggle" class="p-2 rounded-full hover:bg-gray-100">
+                        <i class="fas fa-moon text-gray-600"></i>
+                    </button>
+                    <div class="relative">
+                        <button class="flex text-sm rounded-full focus:outline-none">
+                            <span class="inline-block h-8 w-8 rounded-full bg-ayurvedic text-white flex items-center justify-center">
+                                <i class="fas fa-user-md"></i>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- App Shell Layout -->
+    <div class="flex h-screen">
+        <!-- Sidebar Navigation -->
+        <nav class="w-64 bg-white shadow-md border-r border-gray-200">
+            <div class="p-4">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Navigation</h2>
+                <ul class="space-y-2">
+                    <li>
+                        <a href="dashboard.html" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
+                            <i class="fas fa-tachometer-alt mr-3 text-medical"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="search-mapping.html" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
+                            <i class="fas fa-search mr-3 text-ayurvedic"></i>
+                            Search & Mapping
+                        </a>
+                    </li>
+                    <li>
+                        <a href="terminology-explorer.html" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
+                            <i class="fas fa-book-medical mr-3 text-medical"></i>
+                            Terminology Explorer
+                        </a>
+                    </li>
+                    <li>
+                        <a href="bulk-mapping.html" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
+                            <i class="fas fa-upload mr-3 text-ayurvedic"></i>
+                            Bulk Mapping
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center px-4 py-2 bg-ayurvedic bg-opacity-10 text-ayurvedic rounded-md font-medium">
+                            <i class="fas fa-info-circle mr-3 text-medical"></i>
+                            About
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 overflow-y-auto p-6">
+            <!-- Page Title -->
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">About the Platform</h1>
+                <p class="text-gray-600">Understanding NAMASTE to ICD-11 terminology mapping</p>
+            </div>
+
+            <!-- Problem Statement Section -->
+            <section class="mb-12">
+                <div class="bg-white rounded-lg shadow-md border border-gray-200 p-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                        <i class="fas fa-exclamation-triangle mr-3 text-ayurvedic"></i>
+                        The Problem Statement
+                    </h2>
+                    
+                    <div class="prose prose-lg max-w-none">
+                        <p class="text-gray-700 mb-4">
+                            Traditional medicine systems like Ayurveda have rich terminology for diseases, 
+                            conditions, and treatments that are not directly aligned with modern international 
+                            medical classifications such as ICD-11. This creates challenges in:
+                        </p>
+                        
+                        <ul class="list-disc pl-6 space-y-2 text-gray-700 mb-6">
+                            <li>Electronic Health Record (EHR) integration</li>
+                            <li>Healthcare data analytics and reporting</li>
+                            <li>Research and evidence generation</li>
+                            <li>Reimbursement and insurance claims</li>
+                            <li>Interoperability between traditional and modern healthcare systems</li>
+                            <li>Regulatory compliance and documentation</li>
+                        </ul>
+                        
+                        <p class="text-gray-700">
+                            The NAMASTE (National AYUSH Morbidity and Standardized Terminologies) 
+                            initiative by the Ministry of AYUSH, Government of India, aims to standardize 
+                            Ayurveda terminology and bridge this gap by providing standardized codes 
+                            that can be mapped to international classifications like ICD-11.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Why Mapping Is Needed Section -->
+            <section class="mb-12">
+                <div class="bg-white rounded-lg shadow-md border border-gray-200 p-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                        <i class="fas fa-link mr-3 text-medical"></i>
+                        Why Mapping Is Needed
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="bg-blue-50 p-6 rounded-lg border border-blue-200">
+                            <h3 class="text-xl font-semibold text-medical mb-3 flex items-center">
+                                <i class="fas fa-stethoscope mr-2"></i>
+                                Clinical Integration
+                            </h3>
+                            <p class="text-gray-700">
+                                Enables integration of traditional medicine practices with modern healthcare systems, 
+                                allowing practitioners to document treatments using both NAMASTE and ICD-11 codes.
+                            </p>
+                        </div>
+                        
+                        <div class="bg-green-50 p-6 rounded-lg border border-green-200">
+                            <h3 class="text-xl font-semibold text-ayurvedic mb-3 flex items-center">
+                                <i class="fas fa-chart-line mr-2"></i>
+                                Data Analytics
+                            </h3>
+                            <p class="text-gray-700">
+                                Facilitates evidence-based research by enabling statistical analysis of traditional 
+                                medicine outcomes using standardized international classification systems.
+                            </p>
+                        </div>
+                        
+                        <div class="bg-purple-50 p-6 rounded-lg border border-purple-200">
+                            <h3 class="text-xl font-semibold text-purple-600 mb-3 flex items-center">
+                                <i class="fas fa-globe mr-2"></i>
+                                Global Recognition
+                            </h3>
+                            <p class="text-gray-700">
+                                Promotes global recognition and acceptance of traditional medicine systems 
+                                by aligning with internationally recognized medical terminologies.
+                            </p>
+                        </div>
+                        
+                        <div class="bg-yellow-50 p-6 rounded-lg border border-yellow-200">
+                            <h3 class="text-xl font-semibold text-yellow-600 mb-3 flex items-center">
+                                <i class="fas fa-file-invoice mr-2"></i>
+                                Regulatory Compliance
+                            </h3>
+                            <p class="text-gray-700">
+                                Ensures compliance with healthcare regulations and standards that require 
+                                the use of internationally recognized medical codes for documentation.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Architecture Diagram Section -->
+            <section class="mb-12">
+                <div class="bg-white rounded-lg shadow-md border border-gray-200 p-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                        <i class="fas fa-project-diagram mr-3 text-ayurvedic"></i>
+                        System Architecture
+                    </h2>
+                    
+                    <div class="architecture-diagram p-8 mb-8">
+                        <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 items-center">
+                            <div class="text-center">
+                                <div class="bg-white p-4 rounded-lg shadow border border-gray-200">
+                                    <i class="fas fa-laptop text-3xl text-medical mb-2"></i>
+                                    <p class="font-medium">User Interface</p>
+                                    <p class="text-sm text-gray-600">Web Application</p>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center">
+                                <i class="fas fa-arrow-right text-gray-400 text-2xl"></i>
+                            </div>
+                            
+                            <div class="text-center">
+                                <div class="bg-white p-4 rounded-lg shadow border border-gray-200">
+                                    <i class="fas fa-server text-3xl text-ayurvedic mb-2"></i>
+                                    <p class="font-medium">API Layer</p>
+                                    <p class="text-sm text-gray-600">NestJS Backend</p>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center">
+                                <i class="fas fa-arrow-right text-gray-400 text-2xl"></i>
+                            </div>
+                            
+                            <div class="text-center">
+                                <div class="bg-white p-4 rounded-lg shadow border border-gray-200">
+                                    <i class="fas fa-database text-3xl text-medical mb-2"></i>
+                                    <p class="font-medium">Data Layer</p>
+                                    <p class="text-sm text-gray-600">MongoDB + CSV</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8 text-center">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Terminology Flow</h3>
+                            <div class="flex flex-wrap justify-center gap-4">
+                                <div class="flex items-center">
+                                    <div class="bg-ayurvedic text-white px-4 py-2 rounded-lg">NAMASTE</div>
+                                    <i class="fas fa-arrow-right mx-2 text-gray-400"></i>
+                                    <div class="bg-gray-200 px-4 py-2 rounded-lg">Mapping Layer</div>
+                                    <i class="fas fa-arrow-right mx-2 text-gray-400"></i>
+                                    <div class="bg-medical text-white px-4 py-2 rounded-lg">ICD-11</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="feature-card bg-white p-6 rounded-lg border border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-3 flex items-center">
+                                <i class="fas fa-plug mr-2 text-ayurvedic"></i>
+                                API Integration
+                            </h3>
+                            <p class="text-gray-600">
+                                RESTful APIs following FHIR standards for healthcare interoperability, 
+                                enabling seamless integration with existing healthcare systems.
+                            </p>
+                        </div>
+                        
+                        <div class="feature-card bg-white p-6 rounded-lg border border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-3 flex items-center">
+                                <i class="fas fa-bolt mr-2 text-medical"></i>
+                                Real-time Processing
+                            </h3>
+                            <p class="text-gray-600">
+                                Fast lookup and mapping capabilities with optimized search algorithms 
+                                for instant terminology translation.
+                            </p>
+                        </div>
+                        
+                        <div class="feature-card bg-white p-6 rounded-lg border border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-3 flex items-center">
+                                <i class="fas fa-shield-alt mr-2 text-green-600"></i>
+                                Data Security
+                            </h3>
+                            <p class="text-gray-600">
+                                Secure data handling with proper authentication and authorization 
+                                mechanisms for sensitive healthcare information.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Standards Referenced Section -->
+            <section class="mb-12">
+                <div class="bg-white rounded-lg shadow-md border border-gray-200 p-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                        <i class="fas fa-book mr-3 text-medical"></i>
+                        Standards Referenced
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="bg-blue-50 p-6 rounded-lg border border-blue-200">
+                            <h3 class="text-xl font-semibold text-medical mb-3 flex items-center">
+                                <i class="fas fa-file-medical mr-2"></i>
+                                NAMASTE
+                            </h3>
+                            <p class="text-gray-700 mb-4">
+                                National AYUSH Morbidity and Standardized Terminologies
+                            </p>
+                            <ul class="list-disc pl-6 space-y-2 text-gray-700">
+                                <li>Standardized terminology for Ayurveda, Yoga, Unani, Siddha, and Homeopathy</li>
+                                <li>Over 50,000 standardized terms for diseases, symptoms, and treatments</li>
+                                <li>Developed by the Ministry of AYUSH, Government of India</li>
+                                <li>Enables systematic documentation of traditional medicine practices</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-green-50 p-6 rounded-lg border border-green-200">
+                            <h3 class="text-xl font-semibold text-ayurvedic mb-3 flex items-center">
+                                <i class="fas fa-file-contract mr-2"></i>
+                                ICD-11
+                            </h3>
+                            <p class="text-gray-700 mb-4">
+                                International Classification of Diseases, 11th Revision
+                            </p>
+                            <ul class="list-disc pl-6 space-y-2 text-gray-700">
+                                <li>World Health Organization's medical classification system</li>
+                                <li>Used globally for mortality and morbidity statistics</li>
+                                <li>Includes traditional medicine chapters</li>
+                                <li>Enables international health data comparison</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-purple-50 p-6 rounded-lg border border-purple-200">
+                            <h3 class="text-xl font-semibold text-purple-600 mb-3 flex items-center">
+                                <i class="fas fa-heartbeat mr-2"></i>
+                                FHIR R4
+                            </h3>
+                            <p class="text-gray-700 mb-4">
+                                Fast Healthcare Interoperability Resources
+                            </p>
+                            <ul class="list-disc pl-6 space-y-2 text-gray-700">
+                                <li>Modern healthcare data exchange standard</li>
+                                <li>RESTful API design for healthcare interoperability</li>
+                                <li>Supports various healthcare data types including terminology</li>
+                                <li>Enables integration with Electronic Health Records</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-yellow-50 p-6 rounded-lg border border-yellow-200">
+                            <h3 class="text-xl font-semibold text-yellow-600 mb-3 flex items-center">
+                                <i class="fas fa-code mr-2"></i>
+                                SNOMED CT
+                            </h3>
+                            <p class="text-gray-700 mb-4">
+                                Systematized Nomenclature of Medicine - Clinical Terms
+                            </p>
+                            <ul class="list-disc pl-6 space-y-2 text-gray-700">
+                                <li>Comprehensive clinical terminology</li>
+                                <li>Used for encoding clinical health information</li>
+                                <li>Supports clinical decision support systems</li>
+                                <li>Enables semantic interoperability</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Platform Features Section -->
+            <section>
+                <div class="bg-white rounded-lg shadow-md border border-gray-200 p-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                        <i class="fas fa-cogs mr-3 text-ayurvedic"></i>
+                        Platform Features
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+                            <i class="fas fa-search text-2xl text-medical mb-3"></i>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">Advanced Search</h3>
+                            <p class="text-gray-600">Intuitive search with fuzzy matching, synonyms, and category filtering</p>
+                        </div>
+                        
+                        <div class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+                            <i class="fas fa-exchange-alt text-2xl text-ayurvedic mb-3"></i>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">Real-time Mapping</h3>
+                            <p class="text-gray-600">Instant translation between NAMASTE and ICD-11 terminologies</p>
+                        </div>
+                        
+                        <div class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+                            <i class="fas fa-file-export text-2xl text-purple-600 mb-3"></i>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">Bulk Processing</h3>
+                            <p class="text-gray-600">Upload and process multiple terminology mappings at once</p>
+                        </div>
+                        
+                        <div class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+                            <i class="fas fa-database text-2xl text-blue-600 mb-3"></i>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">FHIR Compliance</h3>
+                            <p class="text-gray-600">Fully compliant with FHIR R4 standards for healthcare interoperability</p>
+                        </div>
+                        
+                        <div class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+                            <i class="fas fa-sync-alt text-2xl text-green-600 mb-3"></i>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">Live Updates</h3>
+                            <p class="text-gray-600">Real-time updates from the latest NAMASTE and ICD-11 releases</p>
+                        </div>
+                        
+                        <div class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+                            <i class="fas fa-chart-line text-2xl text-yellow-600 mb-3"></i>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">Analytics Dashboard</h3>
+                            <p class="text-gray-600">Comprehensive analytics and reporting for terminology usage</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
+    <script>
+        // Dark mode toggle
+        document.getElementById('darkModeToggle').addEventListener('click', function() {
+            document.body.classList.toggle('bg-gray-900');
+            document.body.classList.toggle('text-white');
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

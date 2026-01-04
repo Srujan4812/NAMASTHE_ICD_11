@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terminology Explorer - NAMASTE-ICD11 Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#10b981', // Ayurvedic green
+                        secondary: '#3b82f6', // Medical blue
+                        medical: '#3b82f6',
+                        ayurvedic: '#10b981',
+                        dark: '#1f2937',
+                        light: '#f9fafb'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+        .glow {
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+        }
+        .medical-glow {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        }
+        .code-display {
+            font-family: 'Courier New', monospace;
+            background-color: #f3f4f6;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-weight: bold;
+        }
+        .status-mapped {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        .status-not-found {
+            background-color: #fee2e2;
+            color: #b91c1c;
+        }
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            background-color: white;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Global Header -->
+    <header class="bg-white shadow-md border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-xl font-bold text-gray-900 flex items-center">
+                            <i class="fas fa-heartbeat text-medical mr-2"></i>
+                            <span class="text-medical">NAMASTE</span>
+                            <span class="mx-2 text-gray-400">↔</span>
+                            <span class="text-ayurvedic">ICD-11</span>
+                            <span class="ml-2 text-sm font-normal text-gray-500">Terminology Mapping Platform</span>
+                        </h1>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="darkModeToggle" class="p-2 rounded-full hover:bg-gray-100">
+                        <i class="fas fa-moon text-gray-600"></i>
+                    </button>
+                    <div class="relative">
+                        <button class="flex text-sm rounded-full focus:outline-none">
+                            <span class="inline-block h-8 w-8 rounded-full bg-ayurvedic text-white flex items-center justify-center">
+                                <i class="fas fa-user-md"></i>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- App Shell Layout -->
+    <div class="flex h-screen">
+        <!-- Sidebar Navigation -->
+        <nav class="w-64 bg-white shadow-md border-r border-gray-200">
+            <div class="p-4">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">Navigation</h2>
+                <ul class="space-y-2">
+                    <li>
+                        <a href="dashboard.html" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
+                            <i class="fas fa-tachometer-alt mr-3 text-medical"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="search-mapping.html" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
+                            <i class="fas fa-search mr-3 text-ayurvedic"></i>
+                            Search & Mapping
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center px-4 py-2 bg-ayurvedic bg-opacity-10 text-ayurvedic rounded-md font-medium">
+                            <i class="fas fa-book-medical mr-3 text-ayurvedic"></i>
+                            Terminology Explorer
+                        </a>
+                    </li>
+                    <li>
+                        <a href="bulk-mapping.html" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
+                            <i class="fas fa-upload mr-3 text-ayurvedic"></i>
+                            Bulk Mapping
+                        </a>
+                    </li>
+                    <li>
+                        <a href="about.html" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md">
+                            <i class="fas fa-info-circle mr-3 text-medical"></i>
+                            About
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 overflow-y-auto p-6">
+            <!-- Page Title -->
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Terminology Explorer</h1>
+                <p class="text-gray-600">Browse and explore NAMASTE to ICD-11 terminology mappings</p>
+            </div>
+
+            <!-- Filter Panel -->
+            <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Category Filter</label>
+                        <select id="categoryFilter" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-ayurvedic focus:border-transparent">
+                            <option value="">All Categories</option>
+                            <option value="Dravya">Dravya (Substances)</option>
+                            <option value="Formulation">Formulation</option>
+                            <option value="Procedure">Procedure</option>
+                            <option value="Therapy">Therapy</option>
+                            <option value="Rasayana">Rasayana (Rejuvenation)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">ICD-11 Chapter</label>
+                        <select id="icd11ChapterFilter" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-ayurvedic focus:border-transparent">
+                            <option value="">All Chapters</option>
+                            <option value="1">Certain infectious diseases</option>
+                            <option value="2">Neoplasms</option>
+                            <option value="3">Diseases of the blood or blood-forming organs</option>
+                            <option value="4">Diseases of the immune system</option>
+                            <option value="5">Endocrine, nutritional or metabolic diseases</option>
+                            <option value="6">Mental, behavioural or neurodevelopmental disorders</option>
+                            <option value="7">Sleep-wake disorders</option>
+                            <option value="8">Diseases of the nervous system</option>
+                            <option value="9">Diseases of the visual system</option>
+                            <option value="10">Diseases of the ear or mastoid process</option>
+                            <option value="11">Diseases of the circulatory system</option>
+                            <option value="12">Diseases of the respiratory system</option>
+                            <option value="13">Diseases of the digestive system</option>
+                            <option value="14">Diseases of the skin</option>
+                            <option value="15">Diseases of the musculoskeletal system or connective tissue</option>
+                            <option value="16">Diseases of the genitourinary system</option>
+                            <option value="17">Conditions related to sexual health</option>
+                            <option value="18">Pregnancy, childbirth or the puerperium</option>
+                            <option value="19">Certain conditions originating in the perinatal period</option>
+                            <option value="20">Developmental anomalies</option>
+                            <option value="21">Symptoms, signs or clinical findings, not elsewhere classified</option>
+                            <option value="22">Injury, poisoning or certain other consequences of external causes</option>
+                            <option value="23">External causes of morbidity or mortality</option>
+                            <option value="24">Factors influencing health status or contact with health services</option>
+                            <option value="25">Conditions or factors related to the social determinants of health</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Search</label>
+                        <input type="text" id="explorerSearch" placeholder="Search terms..." class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-ayurvedic focus:border-transparent">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Summary -->
+            <div class="mb-4 flex justify-between items-center">
+                <div>
+                    <span id="resultsCount" class="text-gray-600">Loading...</span>
+                </div>
+                <div>
+                    <button id="exportBtn" class="bg-ayurvedic hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium transition duration-200 flex items-center">
+                        <i class="fas fa-file-export mr-2"></i> Export
+                    </button>
+                </div>
+            </div>
+
+            <!-- Table Container -->
+            <div class="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="sticky-header bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Term Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NAMASTE Code</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ICD-11 Code</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="terminologyTable" class="bg-white divide-y divide-gray-200">
+                            <!-- Table rows will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="mt-6 flex items-center justify-between">
+                <div class="text-sm text-gray-700">
+                    Showing <span id="startItem">1</span> to <span id="endItem">10</span> of <span id="totalItems">100</span> results
+                </div>
+                <div class="flex space-x-2">
+                    <button id="prevPage" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                        Previous
+                    </button>
+                    <button id="nextPage" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                        Next
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Side Drawer for Details -->
+    <div id="sideDrawer" class="fixed top-0 right-0 h-full w-96 bg-white shadow-xl transform transition-transform z-50 hidden">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">Mapping Details</h3>
+                <button id="closeDrawer" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div id="drawerContent" class="space-y-4">
+                <div class="border-b border-gray-200 pb-4">
+                    <h4 class="font-medium text-gray-900 mb-2">NAMASTE Term</h4>
+                    <p><strong>Name:</strong> <span id="detailName">-</span></p>
+                    <p><strong>Code:</strong> <span id="detailCode" class="code-display">-</span></p>
+                    <p><strong>Category:</strong> <span id="detailCategory">-</span></p>
+                    <p><strong>Definition:</strong> <span id="detailDefinition">-</span></p>
+                </div>
+                
+                <div class="border-b border-gray-200 pb-4">
+                    <h4 class="font-medium text-gray-900 mb-2">ICD-11 Mapping</h4>
+                    <p><strong>Code:</strong> <span id="detailIcd11Code" class="code-display">-</span></p>
+                    <p><strong>Category:</strong> <span id="detailIcd11Category">-</span></p>
+                    <p><strong>Mapping Type:</strong> <span id="detailMappingType">-</span></p>
+                </div>
+                
+                <div>
+                    <h4 class="font-medium text-gray-900 mb-2">Additional Information</h4>
+                    <p><strong>Synonyms:</strong> <span id="detailSynonyms">-</span></p>
+                    <p><strong>Created:</strong> <span id="detailCreated">-</span></p>
+                    <p><strong>Modified:</strong> <span id="detailModified">-</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Modal -->
+    <div id="loadingModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-lg shadow-xl">
+            <div class="flex items-center justify-center">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-ayurvedic"></div>
+                <span class="ml-3 text-gray-700">Loading terminology data...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
+    <script>
+        // API base URL - adjust if needed
+        const API_BASE_URL = 'http://localhost:3000';
+        
+        // DOM elements
+        const terminologyTable = document.getElementById('terminologyTable');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const icd11ChapterFilter = document.getElementById('icd11ChapterFilter');
+        const explorerSearch = document.getElementById('explorerSearch');
+        const resultsCount = document.getElementById('resultsCount');
+        const loadingModal = document.getElementById('loadingModal');
+        const sideDrawer = document.getElementById('sideDrawer');
+        const drawerContent = document.getElementById('drawerContent');
+        const closeDrawer = document.getElementById('closeDrawer');
+        const prevPage = document.getElementById('prevPage');
+        const nextPage = document.getElementById('nextPage');
+        const startItem = document.getElementById('startItem');
+        const endItem = document.getElementById('endItem');
+        const totalItems = document.getElementById('totalItems');
+        
+        // State variables
+        let allTerminology = [];
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        
+        // Sample mapping data
+        const sampleMappings = {
+            'N0001': { code: 'DA61', category: 'Diseases of the digestive system', name: 'Amalaki' },
+            'N0002': { code: 'DA61', category: 'Diseases of the digestive system', name: 'Haritaki' },
+            'N0003': { code: 'MB24', category: 'Neurodevelopmental disorders', name: 'Ashwagandha' },
+            'N0004': { code: 'DA61', category: 'Diseases of the digestive system', name: 'Triphala' },
+            'N0005': { code: 'CA23', category: 'Diseases of the respiratory system', name: 'Bibhitaki' },
+            'N0006': { code: 'MB20', category: 'Sleep disorders', name: 'Brahmi' },
+            'N0007': { code: 'HA60', category: 'Diseases of the immune system', name: 'Guduchi' },
+            'N0008': { code: 'GA34', category: 'Disorders of the female genital organs', name: 'Shatavari' },
+            'N0009': { code: 'DA63', category: 'Diseases of the digestive system', name: 'Yashtimadhu' },
+            'N0010': { code: '1F23', category: 'Certain infectious diseases', name: 'Nimba' },
+            'N0011': { code: 'BA00', category: 'Diseases of the cardiovascular system', name: 'Arjuna' },
+            'N0012': { code: 'FA20', category: 'Diseases of the musculoskeletal system', name: 'Guggulu' },
+            'N0013': { code: 'DA61', category: 'Diseases of the digestive system', name: 'Pippali' },
+            'N0014': { code: '5C90', category: 'Diseases of the digestive system', name: 'Maricha' },
+            'N0015': { code: 'DA61', category: 'Diseases of the digestive system', name: 'Shunthi' },
+            'N0016': { code: 'FA20', category: 'Diseases of the musculoskeletal system', name: 'Dashamoola' },
+            'N0017': { code: 'HA60', category: 'Diseases of the immune system', name: 'Chyawanprash' },
+            'N0018': { code: 'DA61', category: 'Diseases of the digestive system', name: 'Trikatu' },
+            'N0019': { code: 'DA63', category: 'Diseases of the digestive system', name: 'Avipattikara' },
+            'N0020': { code: 'DA61', category: 'Diseases of the digestive system', name: 'Hingvashtaka' }
+        };
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTerminologyData();
+        });
+        
+        // Show loading state
+        function showLoading() {
+            loadingModal.classList.remove('hidden');
+        }
+        
+        // Hide loading state
+        function hideLoading() {
+            loadingModal.classList.add('hidden');
+        }
+        
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `p-4 rounded-lg shadow-lg max-w-xs ${type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white`;
+            toast.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} mr-2"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.getElementById('toastContainer').appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+        
+        // Load terminology data
+        async function loadTerminologyData() {
+            showLoading();
+            
+            try {
+                // Load data from the terminology service
+                const response = await fetch(`${API_BASE_URL}/ValueSet/$expand`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.expansion && data.expansion.contains) {
+                    allTerminology = data.expansion.contains.map(item => ({
+                        ...item,
+                        icd11Code: sampleMappings[item.code]?.code || null,
+                        icd11Category: sampleMappings[item.code]?.category || null
+                    }));
+                    
+                    updateResultsCount();
+                    renderTable();
+                } else {
+                    allTerminology = [];
+                    updateResultsCount();
+                    renderTable();
+                }
+            } catch (error) {
+                console.error('Error loading terminology data:', error);
+                showToast(`Error loading terminology data: ${error.message}`, 'error');
+                
+                // For demo purposes, use sample data
+                allTerminology = [
+                    { code: 'N0001', display: 'Amalaki', definition: 'Indian Gooseberry', category: 'Dravya', property: [{ code: 'synonym', valueString: 'Amla' }] },
+                    { code: 'N0002', display: 'Haritaki', definition: 'Chebulic Myrobalan', category: 'Dravya', property: [{ code: 'synonym', valueString: 'Harad' }] },
+                    { code: 'N0003', display: 'Ashwagandha', definition: 'Winter Cherry', category: 'Dravya', property: [{ code: 'synonym', valueString: 'Indian Ginseng' }] },
+                    { code: 'N0004', display: 'Triphala', definition: 'Three Fruits', category: 'Formulation', property: [{ code: 'synonym', valueString: 'Three Myrobalans' }] },
+                    { code: 'N0005', display: 'Bibhitaki', definition: 'Belleric Myrobalan', category: 'Dravya', property: [{ code: 'synonym', valueString: 'Baheda' }] },
+                    { code: 'N0006', display: 'Brahmi', definition: 'Water Hyssop', category: 'Dravya', property: [{ code: 'synonym', valueString: 'Bacopa' }] },
+                    { code: 'N0007', display: 'Guduchi', definition: 'Heart-leaved Moonseed', category: 'Dravya', property: [{ code: 'synonym', valueString: 'Tinospora' }] },
+                    { code: 'N0008', display: 'Shatavari', definition: 'Asparagus Racemosus', category: 'Dravya', property: [{ code: 'synonym', valueString: 'Wild Asparagus' }] },
+                    { code: 'N0009', display: 'Yashtimadhu', definition: 'Liquorice', category: 'Dravya', property: [{ code: 'synonym', valueString: 'Mulethi' }] },
+                    { code: 'N0010', display: 'Nimba', definition: 'Neem', category: 'Dravya', property: [{ code: 'synonym', valueString: 'Margosa' }] }
+                ].map(item => ({
+                    ...item,
+                    icd11Code: sampleMappings[item.code]?.code || null,
+                    icd11Category: sampleMappings[item.code]?.category || null
+                }));
+                
+                updateResultsCount();
+                renderTable();
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // Update results count display
+        function updateResultsCount() {
+            const filteredCount = getFilteredTerminology().length;
+            resultsCount.textContent = `${filteredCount} terms found`;
+        }
+        
+        // Get filtered terminology based on filters
+        function getFilteredTerminology() {
+            let filtered = allTerminology;
+            
+            // Apply category filter
+            const category = categoryFilter.value;
+            if (category) {
+                filtered = filtered.filter(item => item.category === category);
+            }
+            
+            // Apply ICD-11 chapter filter
+            const icd11Chapter = icd11ChapterFilter.value;
+            if (icd11Chapter) {
+                filtered = filtered.filter(item => item.icd11Category && item.icd11Category.includes(icd11Chapter));
+            }
+            
+            // Apply search filter
+            const search = explorerSearch.value.trim().toLowerCase();
+            if (search) {
+                filtered = filtered.filter(item => 
+                    item.display.toLowerCase().includes(search) || 
+                    item.code.toLowerCase().includes(search) ||
+                    (item.property && item.property.some(prop => 
+                        prop.valueString && prop.valueString.toLowerCase().includes(search)
+                    ))
+                );
+            }
+            
+            return filtered;
+        }
+        
+        // Render table with current data
+        function renderTable() {
+            const filtered = getFilteredTerminology();
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, filtered.length);
+            const pageData = filtered.slice(startIndex, endIndex);
+            
+            // Update pagination info
+            startItem.textContent = startIndex + 1;
+            endItem.textContent = endIndex;
+            totalItems.textContent = filtered.length;
+            
+            // Enable/disable pagination buttons
+            prevPage.disabled = currentPage <= 1;
+            nextPage.disabled = endIndex >= filtered.length;
+            
+            // Clear table
+            terminologyTable.innerHTML = '';
+            
+            if (pageData.length === 0) {
+                terminologyTable.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                            No terminology data found
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // Add rows to table
+            pageData.forEach(item => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50 cursor-pointer';
+                
+                const synonyms = item.property?.find(p => p.code === 'synonym')?.valueString || 'N/A';
+                const hasMapping = item.icd11Code !== null;
+                
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">${item.display}</div>
+                        <div class="text-sm text-gray-500">${synonyms}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="code-display text-sm font-medium text-ayurvedic">${item.code}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="code-display text-sm font-medium text-medical">${item.icd11Code || 'N/A'}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${item.category || 'N/A'}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${hasMapping ? 'status-mapped' : 'status-not-found'}">
+                            ${hasMapping ? 'Mapped' : 'Not Mapped'}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button class="text-ayurvedic hover:text-green-700 detail-btn" data-item='${JSON.stringify(item)}'>
+                            <i class="fas fa-info-circle"></i> Details
+                        </button>
+                    </td>
+                `;
+                
+                // Add click event to row
+                row.addEventListener('click', () => {
+                    showDetails(item);
+                });
+                
+                terminologyTable.appendChild(row);
+            });
+            
+            // Add event listeners to detail buttons
+            document.querySelectorAll('.detail-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const item = JSON.parse(btn.getAttribute('data-item'));
+                    showDetails(item);
+                });
+            });
+        }
+        
+        // Show details in side drawer
+        function showDetails(item) {
+            document.getElementById('detailName').textContent = item.display;
+            document.getElementById('detailCode').textContent = item.code;
+            document.getElementById('detailCategory').textContent = item.category || 'N/A';
+            document.getElementById('detailDefinition').textContent = item.definition || 'No definition available';
+            
+            const synonyms = item.property?.find(p => p.code === 'synonym')?.valueString || 'N/A';
+            document.getElementById('detailSynonyms').textContent = synonyms;
+            
+            document.getElementById('detailIcd11Code').textContent = item.icd11Code || 'N/A';
+            document.getElementById('detailIcd11Category').textContent = item.icd11Category || 'N/A';
+            document.getElementById('detailMappingType').textContent = item.icd11Code ? 'Indication-based semantic mapping' : 'No mapping available';
+            
+            document.getElementById('detailCreated').textContent = '2024-01-01';
+            document.getElementById('detailModified').textContent = '2024-01-01';
+            
+            sideDrawer.classList.remove('hidden');
+        }
+        
+        // Close side drawer
+        function closeSideDrawer() {
+            sideDrawer.classList.add('hidden');
+        }
+        
+        // Event listeners for filters
+        categoryFilter.addEventListener('change', () => {
+            currentPage = 1; // Reset to first page when filter changes
+            updateResultsCount();
+            renderTable();
+        });
+        
+        icd11ChapterFilter.addEventListener('change', () => {
+            currentPage = 1; // Reset to first page when filter changes
+            updateResultsCount();
+            renderTable();
+        });
+        
+        explorerSearch.addEventListener('input', () => {
+            currentPage = 1; // Reset to first page when search changes
+            updateResultsCount();
+            renderTable();
+        });
+        
+        // Pagination event listeners
+        prevPage.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable();
+            }
+        });
+        
+        nextPage.addEventListener('click', () => {
+            const filtered = getFilteredTerminology();
+            const totalPages = Math.ceil(filtered.length / itemsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderTable();
+            }
+        });
+        
+        // Side drawer close button
+        closeDrawer.addEventListener('click', closeSideDrawer);
+        
+        // Close drawer when clicking outside
+        document.addEventListener('click', (e) => {
+            if (sideDrawer.classList.contains('hidden')) return;
+            if (!sideDrawer.contains(e.target) && !e.target.closest('.detail-btn')) {
+                closeSideDrawer();
+            }
+        });
+        
+        // Dark mode toggle
+        document.getElementById('darkModeToggle').addEventListener('click', function() {
+            document.body.classList.toggle('bg-gray-900');
+            document.body.classList.toggle('text-white');
+        });
+    </script>
+</body>
+</html>
