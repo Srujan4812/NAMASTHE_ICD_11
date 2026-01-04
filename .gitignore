@@ -26,3 +26,5 @@ npm/
 public/uploads/
 data/*.csv
 ssl/
+backend/node_modules/
+backend/dist/
