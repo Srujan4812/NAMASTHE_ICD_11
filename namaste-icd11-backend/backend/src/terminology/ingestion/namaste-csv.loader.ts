@@ -10,14 +10,33 @@ export interface NamasteCsvRow {
 }
 
 export function loadNamasteCsv(): NamasteCsvRow[] {
-  const filePath = path.join(
-    __dirname,
-    '..','..','..', // Go back to src directory
-    'data',
-    'namaste.csv'
-  );
+  // Try multiple possible paths to find the CSV file in deployed environment
+  const possiblePaths = [
+    // Path when running from dist directory in deployed environment
+    path.join(process.cwd(), 'data', 'namaste.csv'),
+    // Path relative to the loader file
+    path.join(__dirname, '..', '..', '..', 'data', 'namaste.csv'),
+    // Path when running from src directory
+    path.join(__dirname, '..', '..', 'data', 'namaste.csv'),
+    // Path when running from root
+    path.join(process.cwd(), 'namaste-icd11-backend', 'backend', 'data', 'namaste.csv'),
+  ];
 
-  const raw = fs.readFileSync(filePath, 'utf-8');
+  let csvPath = '';
+  for (const p of possiblePaths) {
+    if (fs.existsSync(p)) {
+      csvPath = p;
+      break;
+    }
+  }
+
+  if (!csvPath) {
+    console.error('ERROR: Could not find namaste.csv file in any of the expected locations');
+    console.error('Tried paths:', possiblePaths);
+    throw new Error('CSV file not found');
+  }
+
+  const raw = fs.readFileSync(csvPath, 'utf-8');
 
   const lines = raw.split('\n').filter(line => line.trim().length > 0);
 
