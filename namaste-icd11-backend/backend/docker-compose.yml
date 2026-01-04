@@ -17,15 +17,11 @@ services:
       - app-network
 
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: .
+    ports:
+      - "3000:3000"
     environment:
       - NODE_ENV=production
-      - MONGODB_URI=mongodb://mongo:27017/namaste-icd11
-      - PORT=3000
-    depends_on:
-      - mongo
     restart: unless-stopped
     networks:
       - app-network
