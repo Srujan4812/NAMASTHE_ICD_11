@@ -9,10 +9,16 @@ import { BundleModule } from './bundle/bundle.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
+// Ensure MONGODB_URI is set
+if (!process.env.MONGODB_URI) {
+  console.error('ERROR: MONGODB_URI environment variable is not set');
+  process.exit(1);
+}
+
 @Module({
   imports: [
     BundleModule,
-    MongooseModule.forRoot(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/namaste'), // Use environment variable
+    MongooseModule.forRoot(process.env.MONGODB_URI), // Use environment variable
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
     }),
