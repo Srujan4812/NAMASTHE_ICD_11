@@ -21,16 +21,21 @@ export function loadNamasteCsv(): NamasteCsvRow[] {
 
   const lines = raw.split('\n').filter(line => line.trim().length > 0);
 
+  if (lines.length === 0) {
+    return [];
+  }
+
   const headers = lines[0].split(',').map(h => h.trim());
 
   const rows: NamasteCsvRow[] = [];
 
+  // Skip the header row (index 0) and process data rows starting from index 1
   for (let i = 1; i < lines.length; i++) {
-    const values = lines[i].split(',').map(v => v.trim());
+    const values = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, '')); // Remove quotes if present
 
     const row: any = {};
     headers.forEach((header, index) => {
-      row[header] = values[index];
+      row[header] = values[index] || ''; // Use empty string if value doesn't exist
     });
 
     rows.push(row as NamasteCsvRow);
@@ -44,4 +49,3 @@ if (require.main === module) {
   console.log('Parsed rows:', rows.length);
   console.log(rows);
 }
-
