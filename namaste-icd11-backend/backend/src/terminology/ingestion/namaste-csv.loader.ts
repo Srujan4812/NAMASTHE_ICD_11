@@ -11,7 +11,8 @@ export interface NamasteCsvRow {
 
 export function loadNamasteCsv(): NamasteCsvRow[] {
   const filePath = path.join(
-    process.cwd(),
+    __dirname,
+    '..','..','..', // Go back to src directory
     'data',
     'namaste.csv'
   );
