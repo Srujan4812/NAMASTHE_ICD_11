@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { FhirRepository } from '../database/fhir.repository';
 import { ConceptMapService } from '../terminology/conceptmap.service';
+
+// In-memory storage for bundles (for CSV-only mode)
+const bundleStorage: Map<string, any> = new Map();
+let bundleCounter = 1;
 
 @Injectable()
 export class BundleService {
   constructor(
     private readonly conceptMapService: ConceptMapService,
-    private readonly fhirRepository: FhirRepository,
   ) {}
 
   async saveBundle(bundle: any) {
@@ -84,18 +86,21 @@ export class BundleService {
       );
       
       // Add the ICD-11 mapping to the condition if found
-      if (derivedMappings && derivedMappings.result === true && derivedMappings.match) {
-        const icd11Coding = {
-          system: 'http://hl7.org/fhir/sid/icd-11',
-          code: derivedMappings.match[0].code,
-          display: derivedMappings.match[0].display
-        };
-        condition.code.coding.push(icd11Coding);
+      if (derivedMappings && derivedMappings.chained) {
+        for (const chained of derivedMappings.chained) {
+          const icd11Coding = {
+            system: 'http://hl7.org/fhir/sid/icd-11',
+            code: chained.bio[0].code,
+            display: chained.bio[0].display
+          };
+          condition.code.coding.push(icd11Coding);
+        }
       }
     }
 
-    // Save the validated and potentially updated bundle to the database
-    const savedBundle = await this.fhirRepository.save(bundle);
+    // Save the validated and potentially updated bundle to in-memory storage
+    const bundleId = `bundle-${bundleCounter++}`;
+    bundleStorage.set(bundleId, bundle);
     
     return {
       resourceType: 'OperationOutcome',
@@ -106,7 +111,7 @@ export class BundleService {
           diagnostics: 'Bundle saved successfully',
           details: {
             text: JSON.stringify({
-              bundleId: savedBundle._id,
+              bundleId: bundleId,
               namasteCode: namasteCoding.code,
               derivedMappings,
             }),
@@ -116,18 +121,18 @@ export class BundleService {
     };
   }
 
-  async getBundle(mongoId: string) {
-    // Retrieve a bundle by MongoDB _id from the database
-    const bundle = await this.fhirRepository.findByMongoId(mongoId);
+  async getBundle(bundleId: string) {
+    // Retrieve a bundle by ID from in-memory storage
+    const bundle = bundleStorage.get(bundleId);
+    if (!bundle) {
+      return null;
+    }
     return bundle;
   }
 
   async getAllBundles() {
-    // Retrieve all bundles from the database
-    // Using exists check to find all bundles by resourceType
-    // First, we need to get all bundle resources
-    const bundles = await this.fhirRepository['model'].find({ resourceType: 'Bundle' }).lean().exec();
-    return bundles;
+    // Retrieve all bundles from in-memory storage
+    return Array.from(bundleStorage.values());
   }
   
   private outcomeError(message: string) {
