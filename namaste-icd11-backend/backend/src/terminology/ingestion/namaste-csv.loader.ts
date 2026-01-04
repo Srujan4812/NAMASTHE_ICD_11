@@ -20,13 +20,18 @@ export function loadNamasteCsv(): NamasteCsvRow[] {
     path.join(__dirname, '..', '..', 'data', 'namaste.csv'),
     // Path when running from root
     path.join(process.cwd(), 'namaste-icd11-backend', 'backend', 'data', 'namaste.csv'),
+    // Absolute path from root of the container
+    '/app/data/namaste.csv',
   ];
 
   let csvPath = '';
   for (const p of possiblePaths) {
     if (fs.existsSync(p)) {
       csvPath = p;
+      console.log(`Found CSV file at: ${p}`);
       break;
+    } else {
+      console.log(`Checked path (not found): ${p}`);
     }
   }
 
@@ -60,6 +65,7 @@ export function loadNamasteCsv(): NamasteCsvRow[] {
     rows.push(row as NamasteCsvRow);
   }
 
+  console.log(`Successfully loaded ${rows.length} rows from CSV file`);
   return rows;
 }
 
