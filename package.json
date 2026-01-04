@@ -1,0 +1,17 @@
+{
+  "name": "namaste-icd11-fullstack",
+  "version": "1.0.0",
+  "description": "Fullstack application with backend and frontend",
+  "scripts": {
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "backend": "cd namaste-icd11-backend/backend && npm run start:dev",
+    "frontend": "cd ../lumina-clinical-main && npm run dev",
+    "install-all": "npm install && cd namaste-icd11-backend/backend && npm install && cd ../../lumina-clinical-main && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  },
+  "keywords": ["fullstack", "nestjs", "frontend", "backend"],
+  "author": "",
+  "license": "ISC"
+}
