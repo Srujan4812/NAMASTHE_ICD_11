@@ -23,7 +23,7 @@ export class NamasteRepository {
     return this.namasteModel.find();
   }
 
-  async findByCode(code: string): Promise<NamasteTerminology> {
+  async findByCode(code: string): Promise<NamasteTerminology | null> {
     return this.namasteModel.findOne({ code });
   }
 

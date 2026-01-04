@@ -2,6 +2,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { loadNamasteCsv } from './ingestion/namaste-csv.loader';
 import { NamasteRepository } from '../database/namaste.repository';
 import { NamasteCsvRow } from './ingestion/namaste-csv.loader';
+import { NamasteTerminology } from '../database/namaste-terminology.schema';
 
 @Injectable()
 export class TerminologyService implements OnModuleInit {
